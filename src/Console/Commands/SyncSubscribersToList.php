@@ -18,7 +18,7 @@ class SyncSubscribersToList extends Command
      *
      * @var string
      */
-    protected $signature = "mailwizz:sync-subscribers-list {listId}";
+    protected $signature = "mailwizz:sync-subscribers-list";
 
     /**
      * The console command description.
@@ -51,14 +51,12 @@ class SyncSubscribersToList extends Command
      */
     public function handle()
     {
-        $listId = $this->argument('listId');
+        $this->info('Syncing All Users with MailWizz List Subscribers');
 
-        $this->info('Syncing All Users with MailWizz List Subscribers on list: ' . $listId);
-
-        User::chunk(100, function ($users) use ($listId) {
+        User::chunk(100, function ($users) {
             $this->info('Current Chunk Size (' . count($users) . ')');
 
-            $this->syncSubscribersToList($users, $listId);
+            $this->syncSubscribersToList($users);
 
         });
 
@@ -72,31 +70,31 @@ class SyncSubscribersToList extends Command
      * @param $listId
      * @return void
      */
-    private function syncSubscribersToList($users, $listId)
+    private function syncSubscribersToList($users)
     {
         foreach ($users as $user) {
-            $isSubscribed = $this->mailWizzService->checkIfUserIsSubscribedToList($user, $listId);
+            $isSubscribed = $this->mailWizzService->checkIfUserIsSubscribedToList($user);
 
-            if (!$isSubscribed) {
-                try {
-
-                    $subscribed = $this->mailWizzService->subscribedUserToList($user, $listId);
-
-                    if ($subscribed) {
-                        $this->info('Added ' . $user->email . ' to mailwizz with ' . $user->status);
-                    }
-
-                    continue;
-                } catch (Exception $e) {
-                    $this->info('Failed adding ' . $user->email);
-                    $this->error($e->getMessage());
-                    continue;
-                }
+            if ($isSubscribed) {
+                $this->info($user->email . ' already added to this list');
+                continue;
             }
-            $this->info($user->email . ' already added to this list');
+
+            try {
+                $subscribed = $this->mailWizzService->subscribedUserToList($user);
+
+                if ($subscribed) {
+                    $this->info('Added ' . $user->email . ' to mailwizz with ' . $user->status);
+                }
+
+                continue;
+            } catch (Exception $e) {
+                $this->info('Failed adding ' . $user->email);
+                $this->error($e->getMessage());
+                continue;
+            }
         }
     }
-
 
 }
 ////check if user has a base status of Unsubscribed, if so don't add to list

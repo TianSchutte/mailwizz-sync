@@ -43,7 +43,8 @@ class UserObserver
     public function updated(User $user)
     {
         if ($user->isDirty('status')) {
-            $this->mailwizzService->updateSubscriberStatusByEmailAllLists($user);
+            $lists = $this->mailwizzService->getLists();
+            $this->mailwizzService->updateSubscriberStatusByEmailAllLists($user, $lists);
         }
     }
 

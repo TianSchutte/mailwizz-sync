@@ -85,18 +85,25 @@ class MailWizzService
      * @param User $user
      * @return void
      */
-    public function updateSubscriberStatusByEmailAllLists(User $user)
+    public function updateSubscriberStatusByEmailAllLists(User $user, $lists)
     {
-        $lists = $this->getLists();
+        if (empty($lists)) {
+            $lists = $this->getLists();
+        }
+
         $chunks = array_chunk($lists, self::CHUNK_SIZE);
 
         foreach ($chunks as $chunk) {
             foreach ($chunk as $list) {
                 $listId = $list['list_uid'];
                 try {
-                    $this->listSubscribersEndpoint->updateByEmail($listId, $user->email,
-                        ['STATUS' => $user->status]
-                    );
+                    $isSubscribed = $this->checkIfUserIsSubscribedToList($user);
+
+                    if ($isSubscribed) {
+                        $this->listSubscribersEndpoint->updateByEmail($listId, $user->email,
+                            ['STATUS' => $user->status]
+                        );
+                    }
 
                 } catch (Exception $e) {
                     logger()->error($e->getMessage());
@@ -111,10 +118,12 @@ class MailWizzService
      * @param $listId
      * @return bool
      */
-    public function checkIfUserIsSubscribedToList(User $user, $listId): bool
+    public function checkIfUserIsSubscribedToList(User $user): bool
     {
         try {
-            $response = $this->listSubscribersEndpoint->emailSearch($listId, $user->email);
+            $countryListId = $this->getConfigCountryValues($user->country);
+
+            $response = $this->listSubscribersEndpoint->emailSearch($countryListId, $user->email);
             $status = $response->body->itemAt('status');
 
             if ($status != 'success') {
@@ -133,30 +142,46 @@ class MailWizzService
      * @param $listId
      * @return bool
      */
-    public function subscribedUserToList(User $user, $listId): bool
+    public function subscribedUserToList(User $user): bool
     {
-        //TODO not sure how i'll handle different list id's, can add to config, but what about new lists?
-
-        if (empty($listId)) {
-            return false;
-        }
-
         $subscriberData = [
             'EMAIL' => $user->email,
             'FNAME' => $user->name,
             'LNAME' => $user->surname,
             'STATUS' => $user->status,
-//            'COUNTRY' => $user->country
+            'COUNTRY' => $user->country,
+            'CURRENCY_CODE' => $user->currency_code
         ];
 
+        $countryListId = $this->getConfigCountryValues($subscriberData['COUNTRY']);
+
+
         try {
-            $this->listSubscribersEndpoint->create($listId, $subscriberData);
+            $this->listSubscribersEndpoint->create($countryListId, $subscriberData);
             return true;
         } catch (Exception $e) {
             logger()->error($e->getMessage());
             return false;
 
         }
+    }
+
+    private function getConfigCountryValues($country)
+    {
+        $config = config('mailwizzsync');
+        $countryValues = [];
+
+        foreach ($config as $key => $value) {
+            if (strpos($key, 'lists') !== false) {
+                $countryValues = $value;
+            }
+        }
+
+        if (array_key_exists($country, $countryValues)) {
+            return $countryValues[$country];
+        }
+
+        return $countryValues['ROTW'];
     }
 
     /**
