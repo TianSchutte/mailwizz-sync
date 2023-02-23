@@ -35,11 +35,11 @@ class ViewLists extends Command
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(MailWizzService $mailWizzService)
     {
         parent::__construct();
 
-        $this->mailWizzService = new MailWizzService();
+        $this->mailWizzService = $mailWizzService;
     }
 
 
