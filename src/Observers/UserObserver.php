@@ -18,6 +18,7 @@ class UserObserver
 
     public function __construct(MailWizzService $mailwizzService)
     {
+//        TODO: determine which list to create users to (ROTW, AU/NZ)
         $this->mailwizzService = $mailwizzService;
         $this->defaultListId = config('mailwizzsync.default_list_id');
     }

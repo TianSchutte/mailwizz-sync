@@ -15,18 +15,23 @@ use TianSchutte\MailwizzSync\Api\MailWizzApi;
  */
 class MailWizzService
 {
+
     /**
      * @var MailWizzApi
      */
     protected $mailwizzApi;
+
     /**
      * @var Lists
      */
     protected $listEndpoint;
+
     /**
      * @var ListSubscribers
      */
     protected $listSubscribersEndpoint;
+
+    const CHUNK_SIZE = 50;
 
     /**
      * @param MailWizzApi $mailwizzApi
@@ -54,16 +59,21 @@ class MailWizzService
         try {
             $response = $this->listEndpoint->getLists();
 
-            $body = $response->body->toArray();
+            $records = $response->body->toArray()['data']['records'];
 
-            foreach ($body['data']['records'] as $list) {
-                $data[] = [
-                    'name' => $list['general']['name'],
-                    'list_uid' => $list['general']['list_uid'],
-                    'display_name' => $list['general']['display_name'],
-                    'description' => $list['general']['description'],
-                ];
+            $chunks = array_chunk($records, self::CHUNK_SIZE);
+
+            foreach ($chunks as $chunk) {
+                foreach ($chunk as $list) {
+                    $data[] = [
+                        'name' => $list['general']['name'],
+                        'list_uid' => $list['general']['list_uid'],
+                        'display_name' => $list['general']['display_name'],
+                        'description' => $list['general']['description'],
+                    ];
+                }
             }
+
         } catch (Exception $e) {
             logger()->error($e->getMessage());
         }
@@ -78,17 +88,20 @@ class MailWizzService
     public function updateSubscriberStatusByEmailAllLists(User $user)
     {
         $lists = $this->getLists();
+        $chunks = array_chunk($lists, self::CHUNK_SIZE);
 
-        foreach ($lists as $list) {
-            $listId = $list['list_uid'];
-            try {
-                $this->listSubscribersEndpoint->updateByEmail($listId, $user->email,
-                    ['STATUS' => $user->status]
-                );
+        foreach ($chunks as $chunk) {
+            foreach ($chunk as $list) {
+                $listId = $list['list_uid'];
+                try {
+                    $this->listSubscribersEndpoint->updateByEmail($listId, $user->email,
+                        ['STATUS' => $user->status]
+                    );
 
-            } catch (Exception $e) {
-                logger()->error($e->getMessage());
-                continue;
+                } catch (Exception $e) {
+                    logger()->error($e->getMessage());
+                    continue;
+                }
             }
         }
     }
