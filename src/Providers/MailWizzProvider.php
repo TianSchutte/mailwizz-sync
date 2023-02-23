@@ -23,9 +23,6 @@ class MailWizzProvider extends ServiceProvider
      */
     public function boot()
     {
-        // Load necessary folders
-        $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
-
         // Merge config folder
         $this->mergeConfigFrom(__DIR__ . '/../config/mailwizz.php', 'mailwizzsync');
 
