@@ -28,7 +28,8 @@ class MailWizzProvider extends ServiceProvider
 
         // Binds User Model to package
         $this->app->bind('User', function ($app) {
-            return new User();//todo resolve frm config
+            $userClass = config('mailwizzsync.user_class');
+            return new $userClass;
         });
 
         // Binds Observer to User Model

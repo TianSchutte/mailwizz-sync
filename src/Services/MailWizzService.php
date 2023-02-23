@@ -83,6 +83,7 @@ class MailWizzService
 
     /**
      * @param User $user
+     * @param $lists
      * @return void
      */
     public function updateSubscriberStatusByEmailAllLists(User $user, $lists)
@@ -115,13 +116,12 @@ class MailWizzService
 
     /**
      * @param User $user
-     * @param $listId
      * @return bool
      */
     public function checkIfUserIsSubscribedToList(User $user): bool
     {
         try {
-            $countryListId = $this->getConfigCountryValues($user->country);
+            $countryListId = $this->getConfigCountryListId($user->country);
 
             $response = $this->listSubscribersEndpoint->emailSearch($countryListId, $user->email);
             $status = $response->body->itemAt('status');
@@ -139,7 +139,6 @@ class MailWizzService
 
     /**
      * @param User $user
-     * @param $listId
      * @return bool
      */
     public function subscribedUserToList(User $user): bool
@@ -153,7 +152,7 @@ class MailWizzService
             'CURRENCY_CODE' => $user->currency_code
         ];
 
-        $countryListId = $this->getConfigCountryValues($subscriberData['COUNTRY']);
+        $countryListId = $this->getConfigCountryListId($subscriberData['COUNTRY']);
 
 
         try {
@@ -166,7 +165,11 @@ class MailWizzService
         }
     }
 
-    private function getConfigCountryValues($country)
+    /**
+     * @param $country
+     * @return mixed
+     */
+    private function getConfigCountryListId($country)
     {
         $config = config('mailwizzsync');
         $countryValues = [];
@@ -174,14 +177,11 @@ class MailWizzService
         foreach ($config as $key => $value) {
             if (strpos($key, 'lists') !== false) {
                 $countryValues = $value;
+                break;
             }
         }
 
-        if (array_key_exists($country, $countryValues)) {
-            return $countryValues[$country];
-        }
-
-        return $countryValues['ROTW'];
+        return $countryValues[$country] ?? $countryValues['ROTW'];
     }
 
     /**

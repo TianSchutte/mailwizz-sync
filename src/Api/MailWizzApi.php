@@ -10,7 +10,7 @@ use ReflectionException;
 
 /**
  * @package MailWizzApi
- * @description  Holds the MailWizzApi connections
+ * @description  Holds the MailWizzApi connection
  * @author: Tian Schutte
  */
 class MailWizzApi
@@ -20,11 +20,8 @@ class MailWizzApi
         $this->connect();
     }
 
-
     /**
-     * @note Make sure filesPath variable is writable in webserver ['/data/cache'] is default
-     *       but ['/../MailWizzApi/Cache/data/cache'] is used in original code
-     *      Created a custom folder for now at: storage_path() . 'MailWizz/cache/data'
+     * @note Make sure filesPath variable is writable in webserver
      * @return bool
      */
     public function connect(): bool
@@ -43,7 +40,7 @@ class MailWizzApi
                         'class' => File::class,
                         'filesPath' => $filesPath,
                     ]
-                ],
+                ]
             ]);
 
             //Now inject the configuration and we are ready to make api calls
@@ -58,6 +55,7 @@ class MailWizzApi
         } catch (Exception $e) {
             logger()->error("MailWizz API Exception: " . $e->getMessage());
         }
+
         return false;
     }
 

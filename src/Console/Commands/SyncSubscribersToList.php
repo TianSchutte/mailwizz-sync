@@ -67,7 +67,6 @@ class SyncSubscribersToList extends Command
     /**
      * @description for all users, check if user is on mailwizz, if not add
      * @param $users
-     * @param $listId
      * @return void
      */
     private function syncSubscribersToList($users)
@@ -95,8 +94,4 @@ class SyncSubscribersToList extends Command
             }
         }
     }
-
 }
-////check if user has a base status of Unsubscribed, if so don't add to list
-//if ($curSubscriber->body->toArray()['data']['status'] != 'Unsubscribed') {
-//}

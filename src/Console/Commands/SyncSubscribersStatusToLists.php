@@ -69,8 +69,7 @@ class SyncSubscribersStatusToLists extends Command
     private function syncSubscriberStatusToLists($users)
     {
         $lists = $this->mailWizzService->getLists();
-        foreach ($users as $user)
-        {
+        foreach ($users as $user) {
             try {
                 $this->info('Syncing ' . $user->email . ' STATUS to mailwizz with ' . $user->status);
 

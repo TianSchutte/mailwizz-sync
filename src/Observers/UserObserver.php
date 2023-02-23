@@ -12,15 +12,17 @@ use TianSchutte\MailwizzSync\Services\MailWizzService;
  */
 class UserObserver
 {
+    /**
+     * @var MailWizzService
+     */
     protected $mailwizzService;
 
-    protected $defaultListId;
-
+    /**
+     * @param MailWizzService $mailwizzService
+     */
     public function __construct(MailWizzService $mailwizzService)
     {
-//        TODO: determine which list to create users to (ROTW, AU/NZ)
         $this->mailwizzService = $mailwizzService;
-        $this->defaultListId = config('mailwizzsync.default_list_id');
     }
 
     /**
@@ -31,7 +33,7 @@ class UserObserver
      */
     public function created(User $user)
     {
-        $this->mailwizzService->subscribedUserToList($user, $this->defaultListId);
+        $this->mailwizzService->subscribedUserToList($user);
     }
 
     /**
@@ -67,7 +69,7 @@ class UserObserver
      */
     public function restored(User $user)
     {
-        $this->mailwizzService->subscribedUserToList($user, $this->defaultListId);
+        $this->mailwizzService->subscribedUserToList($user);
     }
 
     /**

@@ -15,6 +15,6 @@
     ],
     "require": {
         "guzzlehttp/guzzle": "^7.0.1",
-        "ems-api/php-client": "dev-master"
+        "ems-api/php-client": "^1.0"
     }
 }
