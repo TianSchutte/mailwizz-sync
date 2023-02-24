@@ -5,7 +5,7 @@ namespace TianSchutte\MailwizzSync\Providers;
 use App\Models\User;
 use Illuminate\Support\ServiceProvider;
 use TianSchutte\MailwizzSync\Console\Commands\SyncSubscribersStatusToLists;
-use TianSchutte\MailwizzSync\Console\Commands\SyncSubscribersToList;
+use TianSchutte\MailwizzSync\Console\Commands\SyncSubscribersToLists;
 use TianSchutte\MailwizzSync\Console\Commands\ViewLists;
 use TianSchutte\MailwizzSync\Observers\UserObserver;
 
@@ -38,10 +38,35 @@ class MailWizzProvider extends ServiceProvider
         // Register the command if we are using the application via the CLI
         if ($this->app->runningInConsole()) {
             $this->commands([
-                SyncSubscribersToList::class,
+                SyncSubscribersToLists::class,
                 SyncSubscribersStatusToLists::class,
                 ViewLists::class,
             ]);
         }
+
+        $this->configureLogging();
+    }
+
+    /**
+     * Configure logging for the package.
+     *
+     * @return void
+     */
+    private function configureLogging()
+    {
+//        Todo: i don't fully understand whats going on here, but it works - find out
+
+        // Define the custom log channel for the package
+        config(['logging.channels.mailwizzsync' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/mailwizzsync.log'),
+            'level' => 'info',
+        ]]);
+
+        // Add the custom log channel to the list of available channels
+        config(['logging.channels' => array_merge(config('logging.channels'), [
+            'mailwizzsync' => config('logging.channels.mailwizzsync'),
+        ])]);
+
     }
 }

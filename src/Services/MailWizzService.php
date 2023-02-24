@@ -6,6 +6,7 @@ use App\Models\User;
 use EmsApi\Endpoint\Lists;
 use EmsApi\Endpoint\ListSubscribers;
 use Exception;
+use Illuminate\Support\Facades\Log;
 use TianSchutte\MailwizzSync\Api\MailWizzApi;
 
 /**
@@ -34,6 +35,11 @@ class MailWizzService
     const CHUNK_SIZE = 50;
 
     /**
+     * @var Log
+     */
+    protected $logger;
+
+    /**
      * @param MailWizzApi $mailwizzApi
      * @param Lists $lists
      * @param ListSubscribers $listSubscribersEndpoint
@@ -47,6 +53,7 @@ class MailWizzService
         $this->mailwizzApi = $mailwizzApi;
         $this->listEndpoint = $lists;
         $this->listSubscribersEndpoint = $listSubscribersEndpoint;
+        $this->logger = Log::channel('mailwizzsync');
     }
 
     /**
@@ -75,7 +82,7 @@ class MailWizzService
             }
 
         } catch (Exception $e) {
-            logger()->error($e->getMessage());
+             $this->logger->error($e->getMessage());
         }
 
         return $data;
@@ -107,7 +114,7 @@ class MailWizzService
                     }
 
                 } catch (Exception $e) {
-                    logger()->error($e->getMessage());
+                     $this->logger->error($e->getMessage());
                     continue;
                 }
             }
@@ -132,7 +139,7 @@ class MailWizzService
 
             return true;
         } catch (Exception $e) {
-            logger()->error($e->getMessage());
+             $this->logger->error($e->getMessage());
             return false;
         }
     }
@@ -154,12 +161,11 @@ class MailWizzService
 
         $countryListId = $this->getConfigCountryListId($subscriberData['COUNTRY']);
 
-
         try {
             $this->listSubscribersEndpoint->create($countryListId, $subscriberData);
             return true;
         } catch (Exception $e) {
-            logger()->error($e->getMessage());
+             $this->logger->error($e->getMessage());
             return false;
 
         }
@@ -200,7 +206,7 @@ class MailWizzService
 
             return true;
         } catch (Exception $e) {
-            logger()->error($e->getMessage());
+             $this->logger->error($e->getMessage());
             return false;
         }
     }
@@ -222,7 +228,7 @@ class MailWizzService
 
             return true;
         } catch (Exception $e) {
-            logger()->error($e->getMessage());
+             $this->logger->error($e->getMessage());
             return false;
         }
     }

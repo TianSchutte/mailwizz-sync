@@ -5,20 +5,21 @@ namespace TianSchutte\MailwizzSync\Console\Commands;
 use App\Models\User;
 use Exception;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use TianSchutte\MailwizzSync\Services\MailWizzService;
 
 /**
  * @package MailWizzApi
  * @author: Tian Schutte
  */
-class SyncSubscribersToList extends Command
+class SyncSubscribersToLists extends BaseCommand
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = "mailwizz:sync-subscribers-list";
+    protected $signature = "mailwizz:sync-subscribers-lists";
 
     /**
      * The console command description.
@@ -26,23 +27,6 @@ class SyncSubscribersToList extends Command
      * @var string
      */
     protected $description = 'Sync all users into the specified mailwizz list subscribers';
-
-    /**
-     * @var MailWizzService
-     */
-    protected $mailWizzService;
-
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct(MailWizzService $mailWizzService)
-    {
-        parent::__construct();
-
-        $this->mailWizzService = $mailWizzService;
-    }
 
     /**
      * Execute the console command.
@@ -53,7 +37,7 @@ class SyncSubscribersToList extends Command
     {
         $this->info('Syncing All Users with MailWizz List Subscribers');
 
-        User::chunk(100, function ($users) {
+        User::chunk(self::CHUNK_SIZE, function ($users) {
             $this->info('Current Chunk Size (' . count($users) . ')');
 
             $this->syncSubscribersToList($users);
@@ -88,8 +72,8 @@ class SyncSubscribersToList extends Command
 
                 continue;
             } catch (Exception $e) {
-                $this->info('Failed adding ' . $user->email);
-                $this->error($e->getMessage());
+                $this->error('Failed adding ' . $user->email. '. Please check mailwizz logs for more details');;
+                $this->logger->error($e->getMessage());
                 continue;
             }
         }

@@ -6,6 +6,7 @@ use EmsApi\Base;
 use EmsApi\Cache\File;
 use EmsApi\Config;
 use Exception;
+use Illuminate\Support\Facades\Log;
 use ReflectionException;
 
 /**
@@ -15,9 +16,16 @@ use ReflectionException;
  */
 class MailWizzApi
 {
+
+    /**
+     * @var Log
+     */
+    protected $logger;
+
     public function __construct()
     {
         $this->connect();
+        $this->logger = Log::channel('mailwizzsync');
     }
 
     /**
@@ -51,9 +59,9 @@ class MailWizzApi
 
             return true;
         } catch (ReflectionException $e) {
-            logger()->error("MailWizz API Config Exception: " . $e->getMessage());
+             $this->logger->error("MailWizz API Config Exception: " . $e->getMessage());
         } catch (Exception $e) {
-            logger()->error("MailWizz API Exception: " . $e->getMessage());
+             $this->logger->error("MailWizz API Exception: " . $e->getMessage());
         }
 
         return false;
