@@ -59,6 +59,10 @@ if (!-e $request_filename){
 ```
 * Add the package into your project
 ```composer require tianschutte/mailwizz-sync```
+* Add Service Provider Call to /config/app.php
+```
+TianSchutte\MailwizzSync\Providers\MailWizzProvider::class,
+```
 * Make sure in config/mailwizz the details are set correctly
 ```  
 'api_url' => 'http://mailwizz.test/api/',
