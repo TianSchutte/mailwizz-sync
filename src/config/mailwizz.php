@@ -8,5 +8,6 @@ return [
         'AU' => 'ls175celo493b',
         'NZ' => 'ls175celo493b',
     ],
+    'cache_file_path' => '/MailWizz/data/cache',
     'user_class' => App\Models\User::class,
 ];

@@ -29,14 +29,14 @@ class MailWizzApi
     }
 
     /**
-     * @note Make sure filesPath variable is writable in webserver
+     * @note Make sure filesPath directory is writable in webserver
      * @return bool
      */
     public function connect(): bool
     {
         //Configuration object (Get your API info from: https://kb.mailwizz.com/articles/find-api-info/)
         try {
-            $filesPath = storage_path() . '/MailWizz/data/cache';
+            $filesPath = storage_path() . config('cache_file_path');
 
             $this->createDirectory($filesPath);
 

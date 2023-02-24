@@ -17,7 +17,7 @@ UPGRADE STEPS: https://www.mailwizz.com/kb/upgrade-steps/
 ```
 
 * When installing mailwizz, after installation and moved install folder
-  404 error occurrences, Add the following to related nginx.conf
+  if 404 error occurrences, Add the following to related nginx.conf
 ```
 if (!-e $request_filename){
     rewrite customer/.* /customer/index.php;
@@ -57,6 +57,8 @@ if (!-e $request_filename){
     -> Tag*: STATUS
     -> Tag*: CURRENCY_CODE
 ```
+* Add the package into your project
+```composer require tianschutte/mailwizz-sync```
 * Make sure in config/mailwizz the details are set correctly
 ```  
 'api_url' => 'http://mailwizz.test/api/',
