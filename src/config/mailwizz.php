@@ -10,4 +10,9 @@ return [
     ],
     'cache_file_path' => '/MailWizz/data/cache',
     'user_class' => App\Models\User::class,
+    'logging' => [
+        'driver' => 'single',
+        'path' => storage_path('logs/mailwizzsync.log'),
+        'level' => 'info',
+    ],
 ];

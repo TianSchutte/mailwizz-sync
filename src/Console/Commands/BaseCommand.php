@@ -30,6 +30,6 @@ abstract class BaseCommand extends Command
         parent::__construct();
 
         $this->mailWizzService = $mailWizzService;
-        $this->logger = Log::channel('mailwizz-sync');
+        $this->logger = Log::channel('mailwizzsync');
     }
 }

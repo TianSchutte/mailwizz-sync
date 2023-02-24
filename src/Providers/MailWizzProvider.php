@@ -26,24 +26,8 @@ class MailWizzProvider extends ServiceProvider
         // Merge config folder
         $this->mergeConfigFrom(__DIR__ . '/../config/mailwizz.php', 'mailwizzsync');
 
-        // Binds User Model to package
-        $this->app->bind('User', function ($app) {
-            $userClass = config('mailwizzsync.user_class');
-            return new $userClass;
-        });
-
-        // Binds Observer to User Model
-        User::observe(UserObserver::class);
-
-        // Register the command if we are using the application via the CLI
-        if ($this->app->runningInConsole()) {
-            $this->commands([
-                SyncSubscribersToLists::class,
-                SyncSubscribersStatusToLists::class,
-                ViewLists::class,
-            ]);
-        }
-
+        $this->configureUser();
+        $this->configureCommands();
         $this->configureLogging();
     }
 
@@ -54,19 +38,41 @@ class MailWizzProvider extends ServiceProvider
      */
     private function configureLogging()
     {
-//        Todo: i don't fully understand whats going on here, but it works - find out
-
-        // Define the custom log channel for the package
-        config(['logging.channels.mailwizzsync' => [
-            'driver' => 'single',
-            'path' => storage_path('logs/mailwizzsync.log'),
-            'level' => 'info',
-        ]]);
-
         // Add the custom log channel to the list of available channels
         config(['logging.channels' => array_merge(config('logging.channels'), [
-            'mailwizzsync' => config('logging.channels.mailwizzsync'),
+            'mailwizzsync' => config('mailwizzsync.logging'),
         ])]);
+    }
 
+    /**
+     * Configure commands for the package.
+     *
+     * @return void
+     */
+    private function configureCommands(){
+        // Register the command if we are using the application via the CLI
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                SyncSubscribersToLists::class,
+                SyncSubscribersStatusToLists::class,
+                ViewLists::class,
+            ]);
+        }
+    }
+
+    /**
+     * Configure user for the package.
+     *
+     * @return void
+     */
+    private function configureUser(){
+        // Binds User Model to package
+        $this->app->bind('User', function ($app) {
+            $userClass = config('mailwizzsync.user_class');
+            return new $userClass;
+        });
+
+        // Binds Observer to User Model
+        User::observe(UserObserver::class);
     }
 }
