@@ -13,7 +13,7 @@
         }
     ],
     "require": {
-        "guzzlehttp/guzzle": "^7.0.1",
+        "guzzlehttp/guzzle": "^6.3",
         "ems-api/php-client": "^1.0"
     }
 }
