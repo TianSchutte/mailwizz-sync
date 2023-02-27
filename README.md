@@ -1,7 +1,4 @@
-**TODO**
-
-- [] Redo Logging, as gle' laravel logging is not same as one i used
-- [] Fix config regiseration, not working as expected
+# Read Me
 
 **Task Requirements:**
 
