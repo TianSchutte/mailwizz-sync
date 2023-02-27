@@ -109,7 +109,7 @@ class MailWizzService
 
                     if ($isSubscribed) {
                         $this->listSubscribersEndpoint->updateByEmail($listId, $user->email,
-                            ['STATUS' => $user->status]
+                            ['STATUS' => $user->player_status]
                         );
                     }
 
@@ -154,7 +154,7 @@ class MailWizzService
             'EMAIL' => $user->email,
             'FNAME' => $user->name,
             'LNAME' => $user->surname,
-            'STATUS' => $user->status,
+            'STATUS' => $user->player_status,
             'COUNTRY' => $user->country,
             'CURRENCY_CODE' => $user->currency_code
         ];
