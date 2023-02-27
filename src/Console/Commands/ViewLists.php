@@ -33,7 +33,7 @@ class ViewLists extends BaseCommand
     public function handle()
     {
         $this->info('All Current MailWizz Lists:');
-        dd(config('mailwizzsync.api_url'));
+
         foreach ($this->mailWizzService->getLists() as $list) {
             $this->info(
                 sprintf(" - %s : %s : %s",
