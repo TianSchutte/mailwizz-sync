@@ -3,8 +3,7 @@
     "description": "a package to sync players to mail listings",
     "autoload": {
         "psr-4": {
-            "Tianschutte\\": "src/",
-            "EmsApi\\": "vendor/ems-api/php-client/src/"
+            "Tianschutte\\": "src/"
         }
     },
     "authors": [
