@@ -104,16 +104,10 @@ php artisan vendor:publish --tag=config
 'user_class' => App\Models\User::class, //add your user model path here
 ```
 
-* Logging, make sure there is a folder in storage/logs called mailwizzsync.log, but should be created automatically
-
-```
-An separate file for logging should be created in the storage/logs/ called mailwizzsync.log
-```
-
 * Finally, run the following commands to migrate users to the database tables
 
 ```
 php artisan mailwizz:view-lists
 php artisan mailwizz:sync-subscribers-lists
-php artisan mailwizz:sync-subscribers-lists
+php artisan mailwizz:sync-subscribers-status-lists
 ```
