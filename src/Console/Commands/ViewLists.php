@@ -2,9 +2,6 @@
 
 namespace TianSchutte\MailwizzSync\Console\Commands;
 
-use Illuminate\Console\Command;
-use TianSchutte\MailwizzSync\Services\MailWizzService;
-
 /**
  * @package MailWizzApi
  * @author: Tian Schutte

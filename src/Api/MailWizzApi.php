@@ -6,7 +6,6 @@ use EmsApi\Base;
 use EmsApi\Cache\File;
 use EmsApi\Config;
 use Exception;
-use Illuminate\Support\Facades\Log;
 use ReflectionException;
 
 /**

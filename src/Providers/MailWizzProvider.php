@@ -39,21 +39,6 @@ class MailWizzProvider extends ServiceProvider
 
         $this->configureUser();
         $this->configureCommands();
-//        $this->configureLogging();
-    }
-
-    /**
-     * Configure logging for the package.
-     *
-     * @return void
-     */
-    private function configureLogging()
-    {
-        // Add the custom log channel to the list of available channels
-        config(['logging.channels' => array_merge(
-            config('logging.channels'), [
-            'mailwizzsync' => config('mailwizzsync.logging'),
-        ])]);
     }
 
     /**

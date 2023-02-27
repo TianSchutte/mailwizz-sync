@@ -3,9 +3,6 @@
 namespace TianSchutte\MailwizzSync\Console\Commands;
 
 use Exception;
-use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
-use TianSchutte\MailwizzSync\Services\MailWizzService;
 
 /**
  * @package MailWizzApi
@@ -72,7 +69,7 @@ class SyncSubscribersToLists extends BaseCommand
 
                 continue;
             } catch (Exception $e) {
-                $this->error('Failed adding ' . $user->email. '. Please check mailwizz logs for more details');;
+                $this->error('Failed adding ' . $user->email . '. Please check mailwizz logs for more details');;
                 $this->logger->error($e->getMessage());
                 continue;
             }
