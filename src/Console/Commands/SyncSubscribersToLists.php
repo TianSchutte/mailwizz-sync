@@ -67,7 +67,7 @@ class SyncSubscribersToLists extends BaseCommand
                 $subscribed = $this->mailWizzService->subscribedUserToList($user);
 
                 if ($subscribed) {
-                    $this->info('Added ' . $user->email . ' to mailwizz with ' . $user->status);
+                    $this->info('Added ' . $user->email . ' to mailwizz with ' . $user->player_status);
                 }
 
                 continue;

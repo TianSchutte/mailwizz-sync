@@ -52,7 +52,7 @@ class SyncSubscribersStatusToLists extends BaseCommand
         $lists = $this->mailWizzService->getLists();
         foreach ($users as $user) {
             try {
-                $this->info('Syncing ' . $user->email . ' STATUS to mailwizz with ' . $user->status);
+                $this->info('Syncing ' . $user->email . ' STATUS to mailwizz with ' . $user->player_status);
 
                 $this->mailWizzService->updateSubscriberStatusByEmailAllLists($user, $lists);
 
