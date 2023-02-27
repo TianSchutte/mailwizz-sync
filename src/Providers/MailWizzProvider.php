@@ -22,12 +22,25 @@ class MailWizzProvider extends ServiceProvider
      */
     public function boot()
     {
-        // Merge config folder
-        $this->mergeConfigFrom(__DIR__ . '/../config/mailwizz.php', 'mailwizzsync');
-
+        $this->configureConfig();
         $this->configureUser();
         $this->configureCommands();
         $this->configureLogging();
+    }
+
+    /**
+     * Configure config for the package.
+     *
+     * @return void
+     */
+    private function configureConfig()
+    {
+        // Merge config folder
+        $this->mergeConfigFrom(__DIR__ . '/../config/mailwizz.php', 'mailwizzsync');
+
+        $this->publishes([
+            __DIR__ . '/../config/mailwizz.php' => config_path('mailwizz.php'),
+        ], 'config');
     }
 
     /**
@@ -48,7 +61,8 @@ class MailWizzProvider extends ServiceProvider
      *
      * @return void
      */
-    private function configureCommands(){
+    private function configureCommands()
+    {
         // Register the command if we are using the application via the CLI
         if ($this->app->runningInConsole()) {
             $this->commands([
@@ -64,7 +78,8 @@ class MailWizzProvider extends ServiceProvider
      *
      * @return void
      */
-    private function configureUser(){
+    private function configureUser()
+    {
         // Binds User Model to package
         $this->app->bind('User', function ($app) {
             $userClass = config('mailwizzsync.user_class');
