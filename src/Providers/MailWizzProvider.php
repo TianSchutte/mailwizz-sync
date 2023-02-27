@@ -36,7 +36,7 @@ class MailWizzProvider extends ServiceProvider
     private function configureConfig()
     {
         // Merge config folder
-        $this->mergeConfigFrom(__DIR__ . '/../config/mailwizz.php', 'mailwizzsync');
+        $this->mergeConfigFrom(config_path('mailwizz.php'), 'mailwizzsync');
 
         $this->publishes([
             __DIR__ . '/../config/mailwizz.php' => config_path('mailwizz.php'),
