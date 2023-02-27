@@ -3,7 +3,7 @@
     "description": "a package to sync players to mail listings",
     "autoload": {
         "psr-4": {
-            "Tianschutte\\": "src/"
+            "TianSchutte\\MailwizzSync\\": "src/"
         }
     },
     "authors": [
