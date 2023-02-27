@@ -1,18 +1,18 @@
 <?php
 
 return [
-    'api_url' => 'http://mailwizz.test/api/',
-    'public_key' => '0315502c1aa7a861cbb4f4a794d7fdb8af438804',
-    'cache_file_path' => '/MailWizz/data/cache',
+    'api_url' => 'https://stgmailwizz.giantlottos.com/api/index.php/',
+    'public_key' => '0568bdaf25ea3f1310f7de9cb9c5a80239eaa27d',
+    'cache_file_path' => storage_path('/MailWizz/data/cache'),
     'lists' => [
-        'ROTW' => 'vn921lnyq5321',
-        'AU' => 'ls175celo493b',
-        'NZ' => 'ls175celo493b',
+        'ROTW' => 'pj8651pfj4941',
+        'AU' => 'gl4334yptz92f',
+        'NZ' => 'gl4334yptz92f',
     ],
     'user_class' => config('auth.providers.users.model'),
     'logging' => [
         'driver' => 'single',
-        'path' => storage_path('logs/mailwizzsync.log'),
+        'path' => storage_path('/logs/mailwizzsync.log'),
         'level' => 'info',
     ],
 ];

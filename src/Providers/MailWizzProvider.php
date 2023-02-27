@@ -25,7 +25,7 @@ class MailWizzProvider extends ServiceProvider
         $this->configureConfig();
         $this->configureUser();
         $this->configureCommands();
-        $this->configureLogging();
+//        $this->configureLogging();
     }
 
     /**

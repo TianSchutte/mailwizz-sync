@@ -62,6 +62,7 @@ class SyncSubscribersToLists extends BaseCommand
                 continue;
             }
 
+
             try {
                 $subscribed = $this->mailWizzService->subscribedUserToList($user);
 

@@ -17,26 +17,19 @@ use ReflectionException;
 class MailWizzApi
 {
 
-    /**
-     * @var Log
-     */
-    protected $logger;
-
     public function __construct()
     {
         $this->connect();
-        $this->logger = Log::channel('mailwizzsync');
     }
 
     /**
      * @note Make sure filesPath directory is writable in webserver
-     * @return bool
      */
-    public function connect(): bool
+    public function connect()
     {
         //Configuration object (Get your API info from: https://kb.mailwizz.com/articles/find-api-info/)
         try {
-            $filesPath = storage_path() . config('cache_file_path');
+            $filesPath = config('mailwizzsync.cache_file_path');
 
             $this->createDirectory($filesPath);
 
@@ -57,14 +50,10 @@ class MailWizzApi
             // start UTC TODO: wasn't included in original, but is it needed?
             //date_default_timezone_set('UTC');
 
-            return true;
-        } catch (ReflectionException $e) {
-             $this->logger->error("MailWizz API Config Exception: " . $e->getMessage());
-        } catch (Exception $e) {
-             $this->logger->error("MailWizz API Exception: " . $e->getMessage());
-        }
 
-        return false;
+        } catch (ReflectionException|Exception $e) {
+            logger()->error("MailWizz API Config Exception: " . $e->getMessage());
+        }
     }
 
     /**
