@@ -16,31 +16,30 @@ use TianSchutte\MailwizzSync\Observers\UserObserver;
 class MailWizzProvider extends ServiceProvider
 {
     /**
+     * Register services.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        //
+        $this->mergeConfigFrom(__DIR__ . '/../config/mailwizzsync.php', 'mailwizzsync');
+    }
+
+    /**
      * Bootstrap services.
      *
      * @return void
      */
     public function boot()
     {
-        $this->configureConfig();
+        $this->publishes([
+            __DIR__ . '/../config/mailwizzsync.php' => config_path('mailwizzsync.php'),
+        ], 'config');
+
         $this->configureUser();
         $this->configureCommands();
 //        $this->configureLogging();
-    }
-
-    /**
-     * Configure config for the package.
-     *
-     * @return void
-     */
-    private function configureConfig()
-    {
-        // Merge config folder
-        $this->mergeConfigFrom(config_path('mailwizz.php'), 'mailwizzsync');
-
-        $this->publishes([
-            __DIR__ . '/../config/mailwizz.php' => config_path('mailwizz.php'),
-        ], 'config');
     }
 
     /**
@@ -51,7 +50,8 @@ class MailWizzProvider extends ServiceProvider
     private function configureLogging()
     {
         // Add the custom log channel to the list of available channels
-        config(['logging.channels' => array_merge(config('logging.channels'), [
+        config(['logging.channels' => array_merge(
+            config('logging.channels'), [
             'mailwizzsync' => config('mailwizzsync.logging'),
         ])]);
     }
@@ -90,8 +90,5 @@ class MailWizzProvider extends ServiceProvider
         app('User')::observe(UserObserver::class);
     }
 
-    public function register()
-    {
-        //
-    }
+
 }
