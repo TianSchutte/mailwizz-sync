@@ -9,7 +9,7 @@ return [
         'AU' => 'ls175celo493b',
         'NZ' => 'ls175celo493b',
     ],
-    'user_class' => App\Models\User::class,
+    'user_class' => config('auth.providers.users.model'),
     'logging' => [
         'driver' => 'single',
         'path' => storage_path('logs/mailwizzsync.log'),
