@@ -2,7 +2,6 @@
 
 namespace TianSchutte\MailwizzSync\Console\Commands;
 
-use App\Models\User;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -37,7 +36,7 @@ class SyncSubscribersToLists extends BaseCommand
     {
         $this->info('Syncing All Users with MailWizz List Subscribers');
 
-        User::chunk(self::CHUNK_SIZE, function ($users) {
+        app('User')::chunk(self::CHUNK_SIZE, function ($users) {
             $this->info('Current Chunk Size (' . count($users) . ')');
 
             $this->syncSubscribersToList($users);

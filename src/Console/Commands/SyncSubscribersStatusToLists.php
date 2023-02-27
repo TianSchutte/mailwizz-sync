@@ -2,8 +2,6 @@
 
 namespace TianSchutte\MailwizzSync\Console\Commands;
 
-use App\Models\User;
-
 /**
  * @package MailWizzApi
  * @author: Tian Schutte
@@ -34,7 +32,7 @@ class SyncSubscribersStatusToLists extends BaseCommand
     {
         $this->info('Syncing All Users Statuses with All MailWizz List Subscribers Statuses');
 
-        User::chunk(self::CHUNK_SIZE, function ($users) {
+        app('User')::chunk(self::CHUNK_SIZE, function ($users) {
             $this->info('Current Chunk Size (' . count($users) . ')');
             $this->syncSubscriberStatusToLists($users);
         });

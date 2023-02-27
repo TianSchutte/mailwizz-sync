@@ -2,7 +2,6 @@
 
 namespace TianSchutte\MailwizzSync\Providers;
 
-use App\Models\User;
 use Illuminate\Support\ServiceProvider;
 use TianSchutte\MailwizzSync\Console\Commands\SyncSubscribersStatusToLists;
 use TianSchutte\MailwizzSync\Console\Commands\SyncSubscribersToLists;
@@ -73,6 +72,11 @@ class MailWizzProvider extends ServiceProvider
         });
 
         // Binds Observer to User Model
-        User::observe(UserObserver::class);
+        app('User')::observe(UserObserver::class);
+    }
+
+    public function register()
+    {
+        //
     }
 }

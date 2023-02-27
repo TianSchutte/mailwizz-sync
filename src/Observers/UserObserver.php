@@ -2,7 +2,7 @@
 
 namespace TianSchutte\MailwizzSync\Observers;
 
-use App\Models\User;
+use Illuminate\Support\Facades\App;
 use TianSchutte\MailwizzSync\Services\MailWizzService;
 
 /**
@@ -28,58 +28,79 @@ class UserObserver
     /**
      * Handle the User "created" event.
      *
-     * @param User $user
+     * @param $user
      * @return void
      */
-    public function created(User $user)
+    public function created($user)
     {
-        $this->mailwizzService->subscribedUserToList($user);
+        $userModel = App::make('User');
+
+        if ($user instanceof $userModel) {
+            $this->mailwizzService->subscribedUserToList($user);
+        }
     }
 
     /**
      * Handle the User "updated" event.
      *
-     * @param User $user
+     * @param $user
      * @return void
      */
-    public function updated(User $user)
+    public function updated($user)
     {
-        if ($user->isDirty('status')) {
-            $lists = $this->mailwizzService->getLists();
-            $this->mailwizzService->updateSubscriberStatusByEmailAllLists($user, $lists);
+        $userModel = App::make('User');
+
+        if ($user instanceof $userModel) {
+            if ($user->isDirty('status')) {
+                $lists = $this->mailwizzService->getLists();
+                $this->mailwizzService->updateSubscriberStatusByEmailAllLists($user, $lists);
+            }
         }
     }
 
     /**
      * Handle the User "deleted" event.
      *
-     * @param User $user
+     * @param $user
      * @return void
      */
-    public function deleted(User $user)
+    public function deleted($user)
     {
-        $this->mailwizzService->unsubscribeUserFromAllLists($user);
+        $userModel = App::make('User');
+
+        if ($user instanceof $userModel) {
+            $this->mailwizzService->unsubscribeUserFromAllLists($user);
+        }
     }
 
     /**
      * Handle the User "restored" event.
      *
-     * @param User $user
+     * @param $user
      * @return void
      */
-    public function restored(User $user)
+    public function restored($user)
     {
-        $this->mailwizzService->subscribedUserToList($user);
+        $userModel = App::make('User');
+
+        if ($user instanceof $userModel) {
+            $this->mailwizzService->subscribedUserToList($user);
+
+        }
     }
 
     /**
      * Handle the User "force deleted" event.
      *
-     * @param User $user
+     * @param $user
      * @return void
      */
-    public function forceDeleted(User $user)
+    public function forceDeleted($user)
     {
-        $this->mailwizzService->unsubscribeUserFromAllLists($user);
+        $userModel = App::make('User');
+
+        if ($user instanceof $userModel) {
+            $this->mailwizzService->unsubscribeUserFromAllLists($user);
+        }
     }
 }

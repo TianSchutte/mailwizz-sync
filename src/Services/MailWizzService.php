@@ -2,10 +2,10 @@
 
 namespace TianSchutte\MailwizzSync\Services;
 
-use App\Models\User;
 use EmsApi\Endpoint\Lists;
 use EmsApi\Endpoint\ListSubscribers;
 use Exception;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use TianSchutte\MailwizzSync\Api\MailWizzApi;
 
@@ -82,51 +82,64 @@ class MailWizzService
             }
 
         } catch (Exception $e) {
-             $this->logger->error($e->getMessage());
+            $this->logger->error($e->getMessage());
         }
 
         return $data;
     }
 
     /**
-     * @param User $user
+     * @param $user
      * @param $lists
      * @return void
      */
-    public function updateSubscriberStatusByEmailAllLists(User $user, $lists)
+    public function updateSubscriberStatusByEmailAllLists($user, $lists)
     {
-        if (empty($lists)) {
-            $lists = $this->getLists();
-        }
 
-        $chunks = array_chunk($lists, self::CHUNK_SIZE);
+        $userModel = App::make('User');
 
-        foreach ($chunks as $chunk) {
-            foreach ($chunk as $list) {
-                $listId = $list['list_uid'];
-                try {
-                    $isSubscribed = $this->checkIfUserIsSubscribedToList($user);
+        if ($user instanceof $userModel) {
 
-                    if ($isSubscribed) {
-                        $this->listSubscribersEndpoint->updateByEmail($listId, $user->email,
-                            ['STATUS' => $user->player_status]
-                        );
+            if (empty($lists)) {
+                $lists = $this->getLists();
+            }
+
+            $chunks = array_chunk($lists, self::CHUNK_SIZE);
+
+            foreach ($chunks as $chunk) {
+                foreach ($chunk as $list) {
+                    $listId = $list['list_uid'];
+                    try {
+                        $isSubscribed = $this->checkIfUserIsSubscribedToList($user);
+
+                        if ($isSubscribed) {
+                            $this->listSubscribersEndpoint->updateByEmail($listId, $user->email,
+                                ['STATUS' => $user->player_status]
+                            );
+                        }
+
+                    } catch (Exception $e) {
+                        $this->logger->error($e->getMessage());
+                        continue;
                     }
-
-                } catch (Exception $e) {
-                     $this->logger->error($e->getMessage());
-                    continue;
                 }
+
             }
         }
     }
 
     /**
-     * @param User $user
+     * @param $user
      * @return bool
      */
-    public function checkIfUserIsSubscribedToList(User $user): bool
+    public function checkIfUserIsSubscribedToList($user): bool
     {
+        $userModel = App::make('User');
+
+        if (!$user instanceof $userModel) {
+            return false;
+        }
+
         try {
             $countryListId = $this->getConfigCountryListId($user->country);
 
@@ -139,17 +152,24 @@ class MailWizzService
 
             return true;
         } catch (Exception $e) {
-             $this->logger->error($e->getMessage());
+            $this->logger->error($e->getMessage());
             return false;
         }
+
     }
 
     /**
-     * @param User $user
+     * @param $user
      * @return bool
      */
-    public function subscribedUserToList(User $user): bool
+    public function subscribedUserToList($user): bool
     {
+        $userModel = App::make('User');
+
+        if (!$user instanceof $userModel) {
+            return false;
+        }
+
         $subscriberData = [
             'EMAIL' => $user->email,
             'FNAME' => $user->name,
@@ -165,7 +185,7 @@ class MailWizzService
             $this->listSubscribersEndpoint->create($countryListId, $subscriberData);
             return true;
         } catch (Exception $e) {
-             $this->logger->error($e->getMessage());
+            $this->logger->error($e->getMessage());
             return false;
 
         }
@@ -191,11 +211,17 @@ class MailWizzService
     }
 
     /**
-     * @param User $user
+     * @param $user
      * @return bool
      */
-    public function unsubscribeUserFromAllLists(User $user): bool
+    public function unsubscribeUserFromAllLists($user): bool
     {
+        $userModel = App::make('User');
+
+        if (!$user instanceof $userModel) {
+            return false;
+        }
+
         try {
             $response = $this->listSubscribersEndpoint->unsubscribeByEmailFromAllLists($user->email);
             $status = $response->body->itemAt('status');
@@ -206,18 +232,24 @@ class MailWizzService
 
             return true;
         } catch (Exception $e) {
-             $this->logger->error($e->getMessage());
+            $this->logger->error($e->getMessage());
             return false;
         }
     }
 
     /**
-     * @param User $user
+     * @param $user
      * @param $listId
      * @return bool
      */
-    public function unSubscribeUserFromList(User $user, $listId): bool
+    public function unSubscribeUserFromList($user, $listId): bool
     {
+        $userModel = App::make('User');
+
+        if (!$user instanceof $userModel) {
+            return false;
+        }
+
         try {
             $response = $this->listSubscribersEndpoint->unsubscribeByEmail($listId, $user->email);
             $status = $response->body->itemAt('status');
@@ -228,7 +260,7 @@ class MailWizzService
 
             return true;
         } catch (Exception $e) {
-             $this->logger->error($e->getMessage());
+            $this->logger->error($e->getMessage());
             return false;
         }
     }
