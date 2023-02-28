@@ -61,5 +61,4 @@ class SyncSubscribersStatusToLists extends BaseCommand
             }
         }
     }
-
 }

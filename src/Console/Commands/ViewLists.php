@@ -29,9 +29,16 @@ class ViewLists extends BaseCommand
      */
     public function handle()
     {
+        $lists = $this->mailWizzService->getLists();
+
+        if (empty($lists)) {
+            $this->error('No lists found on mailwizz server');
+            return 1;
+        }
+
         $this->info('All Current MailWizz Lists:');
 
-        foreach ($this->mailWizzService->getLists() as $list) {
+        foreach ($lists as $list) {
             $this->info(
                 sprintf(" - %s : %s : %s",
                     $list['list_uid'],
@@ -43,5 +50,4 @@ class ViewLists extends BaseCommand
 
         return 0;
     }
-
 }

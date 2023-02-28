@@ -49,7 +49,6 @@ class MailWizzApi
             // start UTC TODO: wasn't included in original, but is it needed?
             //date_default_timezone_set('UTC');
 
-
         } catch (ReflectionException|Exception $e) {
             logger()->error("MailWizz API Config Exception: " . $e->getMessage());
         }

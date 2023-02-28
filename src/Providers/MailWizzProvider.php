@@ -22,7 +22,6 @@ class MailWizzProvider extends ServiceProvider
      */
     public function register()
     {
-        //
         $this->mergeConfigFrom(__DIR__ . '/../config/mailwizzsync.php', 'mailwizzsync');
     }
 
@@ -74,6 +73,4 @@ class MailWizzProvider extends ServiceProvider
         // Binds Observer to User Model
         app('User')::observe(UserObserver::class);
     }
-
-
 }

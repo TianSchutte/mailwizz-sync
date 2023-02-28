@@ -33,9 +33,7 @@ class UserObserver
      */
     public function created($user)
     {
-        $userModel = App::make('User');
-
-        if ($user instanceof $userModel) {
+        if ($this->isUserModel($user)) {
             $this->mailwizzService->subscribedUserToList($user);
         }
     }
@@ -48,9 +46,7 @@ class UserObserver
      */
     public function updated($user)
     {
-        $userModel = App::make('User');
-
-        if ($user instanceof $userModel) {
+        if ($this->isUserModel($user)) {
             if ($user->isDirty('status')) {
                 $lists = $this->mailwizzService->getLists();
                 $this->mailwizzService->updateSubscriberStatusByEmailAllLists($user, $lists);
@@ -66,9 +62,7 @@ class UserObserver
      */
     public function deleted($user)
     {
-        $userModel = App::make('User');
-
-        if ($user instanceof $userModel) {
+        if ($this->isUserModel($user)) {
             $this->mailwizzService->unsubscribeUserFromAllLists($user);
         }
     }
@@ -81,11 +75,8 @@ class UserObserver
      */
     public function restored($user)
     {
-        $userModel = App::make('User');
-
-        if ($user instanceof $userModel) {
+        if ($this->isUserModel($user)) {
             $this->mailwizzService->subscribedUserToList($user);
-
         }
     }
 
@@ -97,10 +88,23 @@ class UserObserver
      */
     public function forceDeleted($user)
     {
+        if ($this->isUserModel($user)) {
+            $this->mailwizzService->unsubscribeUserFromAllLists($user);
+        }
+    }
+
+    /**
+     * @param $user
+     * @return bool
+     */
+    private function isUserModel($user): bool
+    {
         $userModel = App::make('User');
 
         if ($user instanceof $userModel) {
-            $this->mailwizzService->unsubscribeUserFromAllLists($user);
+            return true;
         }
+
+        return false;
     }
 }
