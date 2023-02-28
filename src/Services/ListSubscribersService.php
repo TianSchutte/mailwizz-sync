@@ -2,91 +2,15 @@
 
 namespace TianSchutte\MailwizzSync\Services;
 
-use EmsApi\Endpoint\Lists;
-use EmsApi\Endpoint\ListSubscribers;
 use Exception;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Log;
-use TianSchutte\MailwizzSync\Api\MailWizzApi;
 
 /**
  * @package MailWizzApi
  * @description Main MailWizz functionality is contained here
  * @author: Tian Schutte
  */
-class MailWizzService
+class ListSubscribersService extends BaseMailWizzService
 {
-
-    /**
-     * @var MailWizzApi
-     */
-    protected $mailwizzApi;
-
-    /**
-     * @var Lists
-     */
-    protected $listEndpoint;
-
-    /**
-     * @var ListSubscribers
-     */
-    protected $listSubscribersEndpoint;
-
-    const CHUNK_SIZE = 50;
-
-    /**
-     * @var Log
-     */
-    protected $logger;
-
-    /**
-     * @param MailWizzApi $mailwizzApi
-     * @param Lists $lists
-     * @param ListSubscribers $listSubscribersEndpoint
-     */
-    public function __construct(
-        MailWizzApi     $mailwizzApi,
-        Lists           $lists,
-        ListSubscribers $listSubscribersEndpoint
-    )
-    {
-        $this->mailwizzApi = $mailwizzApi;
-        $this->listEndpoint = $lists;
-        $this->listSubscribersEndpoint = $listSubscribersEndpoint;
-        $this->logger = logger();
-    }
-
-    /**
-     * @return array
-     */
-    public function getLists(): array
-    {
-        $data = [];
-
-        try {
-            $response = $this->listEndpoint->getLists();
-
-            $records = $response->body->toArray()['data']['records'];
-
-            $chunks = array_chunk($records, self::CHUNK_SIZE);
-
-            foreach ($chunks as $chunk) {
-                foreach ($chunk as $list) {
-                    $data[] = [
-                        'name' => $list['general']['name'],
-                        'list_uid' => $list['general']['list_uid'],
-                        'display_name' => $list['general']['display_name'],
-                        'description' => $list['general']['description'],
-                    ];
-                }
-            }
-
-        } catch (Exception $e) {
-            $this->logger->error($e->getMessage());
-        }
-
-        return $data;
-    }
 
     /**
      * @param $user
@@ -95,19 +19,18 @@ class MailWizzService
      */
     public function updateSubscriberStatusByEmailAllLists($user, $lists)
     {
-        if (empty($lists)) {
-            $lists = $this->getLists();
-        }
+        $lists = $lists ?? $this->getLists();
+        $listIds = array_column($lists, 'list_uid');
 
         if ($this->isUserModel($user)) {
 
-            $chunks = array_chunk($lists, self::CHUNK_SIZE);
+            $chunks = array_chunk($listIds, self::CHUNK_SIZE);
 
             foreach ($chunks as $chunk) {
-                foreach ($chunk as $list) {
-                    $listId = $list['list_uid'];
+                foreach ($chunk as $listId) {
+
                     try {
-                        $isSubscribed = $this->checkIfUserIsSubscribedToList($user);
+                        $isSubscribed = $this->isUserSubscribedToList($user);
 
                         if ($isSubscribed) {
                             $this->listSubscribersEndpoint->updateByEmail($listId, $user->email,
@@ -128,7 +51,7 @@ class MailWizzService
      * @param $user
      * @return bool
      */
-    public function checkIfUserIsSubscribedToList($user): bool
+    public function isUserSubscribedToList($user): bool
     {
         if (!$this->isUserModel($user)) {
             return false;
@@ -190,25 +113,6 @@ class MailWizzService
     }
 
     /**
-     * @param $country
-     * @return mixed
-     */
-    private function getConfigCountryListId($country)
-    {
-        $config = config('mailwizzsync');
-        $countryValues = [];
-
-        foreach ($config as $key => $value) {
-            if (strpos($key, 'lists') !== false) {
-                $countryValues = $value;
-                break;
-            }
-        }
-
-        return $countryValues[$country] ?? $countryValues['ROTW'];
-    }
-
-    /**
      * @param $user
      * @return bool
      */
@@ -261,16 +165,28 @@ class MailWizzService
 
     /**
      * @param $user
+     * @param $listId
      * @return bool
      */
-    private function isUserModel($user): bool
+    public function deleteSubscriberFromList($user, $listId): bool
     {
-        $userModel = App::make('User');
-
-        if ($user instanceof $userModel) {
-            return true;
+        if (!$this->isUserModel($user)) {
+            return false;
         }
 
-        return false;
+        try {
+            $response = $this->listSubscribersEndpoint->deleteByEmail($listId, $user->email);
+            $status = $response->body->itemAt('status');
+
+            if ($status != 'success') {
+                return false;
+            }
+
+            return true;
+        } catch (Exception $e) {
+            $this->logger->error($e->getMessage());
+            return false;
+        }
     }
+
 }

@@ -4,12 +4,12 @@ namespace TianSchutte\MailwizzSync\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
-use TianSchutte\MailwizzSync\Services\MailWizzService;
+use TianSchutte\MailwizzSync\Services\ListSubscribersService;
 
 abstract class BaseCommand extends Command
 {
     /**
-     * @var MailWizzService
+     * @var ListSubscribersService
      */
     protected $mailWizzService;
 
@@ -25,7 +25,7 @@ abstract class BaseCommand extends Command
      *
      * @return void
      */
-    public function __construct(MailWizzService $mailWizzService)
+    public function __construct(ListSubscribersService $mailWizzService)
     {
         parent::__construct();
 

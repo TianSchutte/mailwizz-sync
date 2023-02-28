@@ -52,7 +52,7 @@ class SyncSubscribersToLists extends BaseCommand
     private function syncSubscribersToList($users)
     {
         foreach ($users as $user) {
-            $isSubscribed = $this->mailWizzService->checkIfUserIsSubscribedToList($user);
+            $isSubscribed = $this->mailWizzService->isUserSubscribedToList($user);
 
             if ($isSubscribed) {
                 $this->info($user->email . ' already added to this list');

@@ -3,7 +3,7 @@
 namespace TianSchutte\MailwizzSync\Observers;
 
 use Illuminate\Support\Facades\App;
-use TianSchutte\MailwizzSync\Services\MailWizzService;
+use TianSchutte\MailwizzSync\Services\ListSubscribersService;
 
 /**
  * @package MailWizzApi
@@ -13,14 +13,14 @@ use TianSchutte\MailwizzSync\Services\MailWizzService;
 class UserObserver
 {
     /**
-     * @var MailWizzService
+     * @var ListSubscribersService
      */
     protected $mailwizzService;
 
     /**
-     * @param MailWizzService $mailwizzService
+     * @param ListSubscribersService $mailwizzService
      */
-    public function __construct(MailWizzService $mailwizzService)
+    public function __construct(ListSubscribersService $mailwizzService)
     {
         $this->mailwizzService = $mailwizzService;
     }
