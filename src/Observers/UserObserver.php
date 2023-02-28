@@ -2,7 +2,6 @@
 
 namespace TianSchutte\MailwizzSync\Observers;
 
-use Illuminate\Support\Facades\App;
 use TianSchutte\MailwizzSync\Services\ListSubscribersService;
 
 /**
@@ -33,9 +32,7 @@ class UserObserver
      */
     public function created($user)
     {
-        if ($this->isUserModel($user)) {
-            $this->mailwizzService->subscribedUserToList($user);
-        }
+        $this->mailwizzService->subscribedUserToList($user);
     }
 
     /**
@@ -46,11 +43,9 @@ class UserObserver
      */
     public function updated($user)
     {
-        if ($this->isUserModel($user)) {
-            if ($user->isDirty('status')) {
-                $lists = $this->mailwizzService->getLists();
-                $this->mailwizzService->updateSubscriberStatusByEmailAllLists($user, $lists);
-            }
+        if ($user->isDirty('status')) {
+            $lists = $this->mailwizzService->getLists();
+            $this->mailwizzService->updateSubscriberStatusByEmailAllLists($user, $lists);
         }
     }
 
@@ -62,9 +57,7 @@ class UserObserver
      */
     public function deleted($user)
     {
-        if ($this->isUserModel($user)) {
-            $this->mailwizzService->unsubscribeUserFromAllLists($user);
-        }
+        $this->mailwizzService->unsubscribeUserFromAllLists($user);
     }
 
     /**
@@ -75,9 +68,7 @@ class UserObserver
      */
     public function restored($user)
     {
-        if ($this->isUserModel($user)) {
-            $this->mailwizzService->subscribedUserToList($user);
-        }
+        $this->mailwizzService->subscribedUserToList($user);
     }
 
     /**
@@ -88,23 +79,6 @@ class UserObserver
      */
     public function forceDeleted($user)
     {
-        if ($this->isUserModel($user)) {
-            $this->mailwizzService->unsubscribeUserFromAllLists($user);
-        }
-    }
-
-    /**
-     * @param $user
-     * @return bool
-     */
-    private function isUserModel($user): bool
-    {
-        $userModel = App::make('User');
-
-        if ($user instanceof $userModel) {
-            return true;
-        }
-
-        return false;
+        $this->mailwizzService->unsubscribeUserFromAllLists($user);
     }
 }
