@@ -59,14 +59,14 @@ class SyncSubscribersToLists extends BaseCommand
         app('User')::chunk($this->chunkSize, function ($users) use (&$failedUsers) {
 
             foreach ($users as $user) {
-                $isSubscribed = $this->mailWizzService->isUserSubscribedToList($user);
+                $isSubscribed = $this->mailWizzService->isSubscriberInLists($user);
 
                 if ($isSubscribed) {
                     $this->info($user->email . ' already added to this list');
                     continue;
                 }
 
-                $subscribed = $this->mailWizzService->subscribedUserToList($user);
+                $subscribed = $this->mailWizzService->subscribeToList($user);
 
                 if ($subscribed) {
                     $this->info('Added ' . $user->email . ' to mailwizz with ' . $user->player_status);

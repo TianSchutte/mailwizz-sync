@@ -2,6 +2,8 @@
 
 namespace TianSchutte\MailwizzSync\Observers;
 
+use Exception;
+use ReflectionException;
 use TianSchutte\MailwizzSync\Services\MailWizzService;
 
 /**
@@ -32,10 +34,20 @@ class UserObserver
      */
     public function created($user)
     {
+        $isSubscribeToList = false;
+
         try {
-            $this->mailwizzService->subscribedUserToList($user);
-        } catch (\Exception $e) {
+            $isSubscribeToList = $this->mailwizzService->subscribeToList($user);
+        } catch (Exception $e) {
             logger()->error($e->getMessage());
+        }
+
+        if (!$isSubscribeToList) {
+            logger()->error(
+                'MailWizz: Could not subscribe user to list', [
+                    'user' => $user->email,
+                ]
+            );
         }
     }
 
@@ -50,8 +62,8 @@ class UserObserver
         if ($user->isDirty('status')) {
             try {
                 $lists = $this->mailwizzService->getLists();
-                $this->mailwizzService->updateSubscriberStatusByEmailAllLists($user, $lists);
-            } catch (\ReflectionException|\Exception $e) {
+                $this->mailwizzService->updateSubscriberStatusLists($user, $lists);
+            } catch (ReflectionException|Exception $e) {
                 logger()->error($e->getMessage());
             }
         }
@@ -65,10 +77,20 @@ class UserObserver
      */
     public function deleted($user)
     {
+        $isUnsubscribeFromLists = false;
+
         try {
-            $this->mailwizzService->unsubscribeUserFromAllLists($user);
-        } catch (\Exception $e) {
+            $isUnsubscribeFromLists = $this->mailwizzService->unsubscribeFromLists($user);
+        } catch (Exception $e) {
             logger()->error($e->getMessage());
+        }
+
+        if (!$isUnsubscribeFromLists) {
+            logger()->error(
+                'MailWizz: Could not subscribe user to list', [
+                    'user' => $user->email,
+                ]
+            );
         }
     }
 
@@ -80,10 +102,20 @@ class UserObserver
      */
     public function restored($user)
     {
+        $isSubscribeToList = false;
+
         try {
-            $this->mailwizzService->subscribedUserToList($user);
-        } catch (\Exception $e) {
+            $isSubscribeToList = $this->mailwizzService->subscribeToList($user);
+        } catch (Exception $e) {
             logger()->error($e->getMessage());
+        }
+
+        if (!$isSubscribeToList) {
+            logger()->error(
+                'MailWizz: Could not subscribe user to list', [
+                    'user' => $user->email,
+                ]
+            );
         }
     }
 
@@ -95,10 +127,20 @@ class UserObserver
      */
     public function forceDeleted($user)
     {
+        $isUnsubscribedFromList = false;
+
         try {
-            $this->mailwizzService->unsubscribeUserFromAllLists($user);
-        } catch (\Exception $e) {
+            $isUnsubscribedFromList = $this->mailwizzService->unsubscribeFromLists($user);
+        } catch (Exception $e) {
             logger()->error($e->getMessage());
+        }
+
+        if (!$isUnsubscribedFromList) {
+            logger()->error(
+                'MailWizz: Could not subscribe user to list', [
+                    'user' => $user->email,
+                ]
+            );
         }
     }
 }

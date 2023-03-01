@@ -10,5 +10,5 @@ return [
         'NZ' => 'list_2_id',
     ],
     'user_class' => config('auth.providers.users.model'),
-    'chunk_size' => 50,
+    'chunk_size' => env('MAILWIZZ_CHUNK_SIZE',50),
 ];

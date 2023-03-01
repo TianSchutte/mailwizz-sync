@@ -4,7 +4,6 @@ namespace TianSchutte\MailwizzSync\Services;
 
 use EmsApi\Endpoint\Lists;
 use EmsApi\Endpoint\ListSubscribers;
-use Illuminate\Support\Facades\Log;
 use TianSchutte\MailwizzSync\Api\MailWizzApi;
 use TianSchutte\MailwizzSync\Contracts\ListManagerInterface;
 use TianSchutte\MailwizzSync\Contracts\SubscriberManagerInterface;
@@ -51,5 +50,4 @@ class MailWizzService implements ListManagerInterface, SubscriberManagerInterfac
         $this->listEndpoint = $lists;
         $this->listSubscribersEndpoint = $listSubscribersEndpoint;
     }
-
 }

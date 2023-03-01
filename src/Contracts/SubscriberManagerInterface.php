@@ -4,8 +4,10 @@ namespace TianSchutte\MailwizzSync\Contracts;
 
 interface SubscriberManagerInterface
 {
-    public function updateSubscriberStatusByEmailAllLists($user, $lists);
-    public function isUserSubscribedToList($user): bool;
-    public function subscribedUserToList($user): bool;
-    public function unsubscribeUserFromAllLists($user): bool;
+    public function updateSubscriberStatusLists($user, $lists);
+    public function isSubscriberInLists($user): bool;
+    public function subscribeToList($user): bool;
+    public function unsubscribeFromLists($user): bool;
+    public function unSubscribeFromList($user, $listId): bool;
+    public function deleteSubscriberFromList($user, $listId): bool;
 }

@@ -2,17 +2,24 @@
 
 namespace TianSchutte\MailwizzSync\Traits;
 
+use TianSchutte\MailwizzSync\Helper;
+
 trait ListManagementTrait
 {
     /**
      * @return array
      * @throws \ReflectionException
+     * @throws \Exception
      */
     public function getLists(): array
     {
         $data = [];
 
         $response = $this->listEndpoint->getLists();
+
+        if (!Helper::isEmsResponseSuccessful($response)) {
+            throw new \Exception('Error getting lists');
+        }
 
         $records = $response->body->toArray()['data']['records'];
 
@@ -30,15 +37,5 @@ trait ListManagementTrait
         }
 
         return $data;
-    }
-
-    /**
-     * @param $country
-     * @return mixed
-     */
-    protected function getListIdFromConfig($country)
-    {
-        $countryValues = config('mailwizzsync.lists');
-        return $countryValues[$country] ?? $countryValues['ROTW'];
     }
 }

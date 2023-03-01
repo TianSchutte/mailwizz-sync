@@ -38,17 +38,17 @@ class SyncSubscribersStatusToLists extends BaseCommand
         try {
             $lists = $this->mailWizzService->getLists();
 
-            if (empty($lists)) {
-                $this->error('No lists found on mailwizz server');
-                return 1;
-            }
-
-            $this->syncSubscriberStatusToLists($lists);
         } catch (ReflectionException|Exception $e) {
             $this->error($e->getMessage());
             return 1;
         }
 
+        if (empty($lists)) {
+            $this->error('No lists found on mailwizz server');
+            return 1;
+        }
+
+        $this->syncSubscriberStatusToLists($lists);
 
         $this->info('Done');
         return 0;
@@ -66,7 +66,7 @@ class SyncSubscribersStatusToLists extends BaseCommand
                 try {
                     $this->info('Syncing ' . $user->email . ' STATUS to mailwizz with ' . $user->player_status);
 
-                    $this->mailWizzService->updateSubscriberStatusByEmailAllLists($user, $lists);
+                    $this->mailWizzService->updateSubscriberStatusLists($user, $lists);
 
                 } catch (Exception $e) {
                     $this->error('Error syncing ' . $user->email . '. Please check logs for more details');

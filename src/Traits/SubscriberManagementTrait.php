@@ -3,6 +3,7 @@
 namespace TianSchutte\MailwizzSync\Traits;
 
 use Exception;
+use TianSchutte\MailwizzSync\Helper;
 
 trait SubscriberManagementTrait
 {
@@ -13,7 +14,7 @@ trait SubscriberManagementTrait
      * @return void
      * @throws Exception
      */
-    public function updateSubscriberStatusByEmailAllLists($user, $lists)
+    public function updateSubscriberStatusLists($user, $lists)
     {
         $listIds = array_column($lists, 'list_uid');
 
@@ -21,7 +22,7 @@ trait SubscriberManagementTrait
 
         foreach ($chunks as $chunk) {
             foreach ($chunk as $listId) {
-                if ($this->isUserSubscribedToList($user)) {
+                if ($this->isSubscriberInLists($user)) {
                     $this->listSubscribersEndpoint->updateByEmail($listId, $user->email,
                         ['STATUS' => $user->player_status]
                     );
@@ -35,19 +36,13 @@ trait SubscriberManagementTrait
      * @return bool
      * @throws Exception
      */
-    public function isUserSubscribedToList($user): bool
+    public function isSubscriberInLists($user): bool
     {
-        $countryListId = $this->getListIdFromConfig($user->country);
+        $countryListId = Helper::getListIdFromConfig($user->country);
 
         $response = $this->listSubscribersEndpoint->emailSearch($countryListId, $user->email);
 
-//        if (!isset($response->body)) {
-//            return false;
-//        }
-
-        $status = $response->body->itemAt('status');
-
-        if ($status != 'success') {
+        if (!Helper::isEmsResponseSuccessful($response)) {
             return false;
         }
 
@@ -59,7 +54,7 @@ trait SubscriberManagementTrait
      * @return bool
      * @throws Exception
      */
-    public function subscribedUserToList($user): bool
+    public function subscribeToList($user): bool
     {
         $subscriberData = [
             'EMAIL' => $user->email,
@@ -70,17 +65,11 @@ trait SubscriberManagementTrait
             'CURRENCY_CODE' => $user->currency_code
         ];
 
-        $countryListId = $this->getListIdFromConfig($user->country);
+        $countryListId = Helper::getListIdFromConfig($user->country);
 
         $response = $this->listSubscribersEndpoint->create($countryListId, $subscriberData);
 
-//        if (!isset($response->body)) {
-//            return false;
-//        }
-
-        $status = $response->body->itemAt('status');
-
-        if ($status != 'success') {
+        if (!Helper::isEmsResponseSuccessful($response)) {
             return false;
         }
 
@@ -92,13 +81,12 @@ trait SubscriberManagementTrait
      * @return bool
      * @throws Exception
      */
-    public function unsubscribeUserFromAllLists($user): bool
+    public function unsubscribeFromLists($user): bool
     {
 
         $response = $this->listSubscribersEndpoint->unsubscribeByEmailFromAllLists($user->email);
-        $status = $response->body->itemAt('status');
 
-        if ($status != 'success') {
+        if (!Helper::isEmsResponseSuccessful($response)) {
             return false;
         }
 
@@ -111,12 +99,11 @@ trait SubscriberManagementTrait
      * @return bool
      * @throws Exception
      */
-    public function unSubscribeUserFromList($user, $listId): bool
+    public function unSubscribeFromList($user, $listId): bool
     {
         $response = $this->listSubscribersEndpoint->unsubscribeByEmail($listId, $user->email);
-        $status = $response->body->itemAt('status');
 
-        if ($status != 'success') {
+        if (!Helper::isEmsResponseSuccessful($response)) {
             return false;
         }
 
@@ -132,9 +119,8 @@ trait SubscriberManagementTrait
     public function deleteSubscriberFromList($user, $listId): bool
     {
         $response = $this->listSubscribersEndpoint->deleteByEmail($listId, $user->email);
-        $status = $response->body->itemAt('status');
 
-        if ($status != 'success') {
+        if (!Helper::isEmsResponseSuccessful($response)) {
             return false;
         }
 
