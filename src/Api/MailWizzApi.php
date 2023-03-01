@@ -24,8 +24,6 @@ class MailWizzApi
     {
         try {
             $this->connect();
-            $this->validateConnection();
-
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }
@@ -73,20 +71,6 @@ class MailWizzApi
     {
         if (!file_exists($path)) {
             mkdir($path, 0777, true);
-        }
-    }
-
-    /**
-     * @throws ReflectionException
-     * @throws Exception
-     */
-    private function validateConnection()
-    {
-        $endpoint = new Countries();
-        $response = $endpoint->getCountries($pageNumber = 1, $perPage = 2);
-
-        if (!Helper::isEmsResponseSuccessful($response)) {
-            throw new Exception('MailWizz API connection failed. Please check your configuration.');
         }
     }
 }

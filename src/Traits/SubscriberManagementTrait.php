@@ -3,7 +3,6 @@
 namespace TianSchutte\MailwizzSync\Traits;
 
 use Exception;
-use TianSchutte\MailwizzSync\Helper;
 
 trait SubscriberManagementTrait
 {
@@ -38,11 +37,11 @@ trait SubscriberManagementTrait
      */
     public function isSubscriberInLists($user): bool
     {
-        $countryListId = Helper::getListIdForCountry($user->country);
+        $countryListId = $this->getListIdForCountry($user->country);
 
         $response = $this->listSubscribersEndpoint->emailSearch($countryListId, $user->email);
 
-        if (!Helper::isEmsResponseSuccessful($response)) {
+        if (!$this->isEmsResponseSuccessful($response)) {
             return false;
         }
 
@@ -65,11 +64,11 @@ trait SubscriberManagementTrait
             'CURRENCY_CODE' => $user->currency_code
         ];
 
-        $countryListId = Helper::getListIdForCountry($user->country);
+        $countryListId = $this->getListIdForCountry($user->country);
 
         $response = $this->listSubscribersEndpoint->create($countryListId, $subscriberData);
 
-        if (!Helper::isEmsResponseSuccessful($response)) {
+        if (!$this->isEmsResponseSuccessful($response)) {
             return false;
         }
 
@@ -86,7 +85,7 @@ trait SubscriberManagementTrait
 
         $response = $this->listSubscribersEndpoint->unsubscribeByEmailFromAllLists($user->email);
 
-        if (!Helper::isEmsResponseSuccessful($response)) {
+        if (!$this->isEmsResponseSuccessful($response)) {
             return false;
         }
 
@@ -103,7 +102,7 @@ trait SubscriberManagementTrait
     {
         $response = $this->listSubscribersEndpoint->unsubscribeByEmail($listId, $user->email);
 
-        if (!Helper::isEmsResponseSuccessful($response)) {
+        if (!$this->isEmsResponseSuccessful($response)) {
             return false;
         }
 
@@ -120,9 +119,24 @@ trait SubscriberManagementTrait
     {
         $response = $this->listSubscribersEndpoint->deleteByEmail($listId, $user->email);
 
-        if (!Helper::isEmsResponseSuccessful($response)) {
+        if (!$this->isEmsResponseSuccessful($response)) {
             return false;
         }
+
+        return true;
+    }
+
+    /**
+     * @param $response
+     * @return bool
+     */
+    public static function isEmsResponseSuccessful($response): bool
+    {
+        $isSuccessful = $response->getHttpCode() >= 200 && $response->getHttpCode() < 400;
+        if (!$isSuccessful) return false;
+
+        $status = $response->body->itemAt('status');
+        if ($status != 'success') return false;
 
         return true;
     }
