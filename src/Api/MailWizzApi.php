@@ -83,7 +83,7 @@ class MailWizzApi
     private function validateConnection()
     {
         $endpoint = new Countries();
-        $response = $endpoint->getCountries($pageNumber = 1, $perPage = 1);
+        $response = $endpoint->getCountries($pageNumber = 1, $perPage = 2);
 
         if (!Helper::isEmsResponseSuccessful($response)) {
             throw new Exception('MailWizz API connection failed. Please check your configuration.');
