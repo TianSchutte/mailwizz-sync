@@ -41,13 +41,12 @@ class MailWizzProvider extends ServiceProvider
     }
 
     /**
-     * Configure commands for the package.
+     * Configure commands for the package by registering the commands if we are using the application via the CLI
      *
      * @return void
      */
     private function configureCommands()
     {
-        // Register the command if we are using the application via the CLI
         if ($this->app->runningInConsole()) {
             $this->commands([
                 SyncSubscribersToLists::class,
@@ -58,19 +57,17 @@ class MailWizzProvider extends ServiceProvider
     }
 
     /**
-     * Configure user for the package.
+     * Configure user for the package by binding user model to package then observing the model
      *
      * @return void
      */
     private function configureUser()
     {
-        // Binds User Model to package
         $this->app->bind('User', function ($app) {
             $userClass = config('mailwizzsync.user_class');
             return new $userClass;
         });
 
-        // Binds Observer to User Model
         app('User')::observe(UserObserver::class);
     }
 }

@@ -6,7 +6,6 @@ use EmsApi\Base;
 use EmsApi\Cache\File;
 use EmsApi\Config;
 use EmsApi\Endpoint\Countries;
-use EmsApi\Endpoint\Lists;
 use Exception;
 use ReflectionException;
 use TianSchutte\MailwizzSync\Helper;

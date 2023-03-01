@@ -37,7 +37,6 @@ class SyncSubscribersStatusToLists extends BaseCommand
 
         try {
             $lists = $this->mailWizzService->getLists();
-
         } catch (ReflectionException|Exception $e) {
             $this->error($e->getMessage());
             return 1;

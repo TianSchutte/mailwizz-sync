@@ -32,7 +32,6 @@ class ViewLists extends BaseCommand
      */
     public function handle()
     {
-
         try {
             $lists = $this->mailWizzService->getLists();
         } catch (ReflectionException|Exception $e) {

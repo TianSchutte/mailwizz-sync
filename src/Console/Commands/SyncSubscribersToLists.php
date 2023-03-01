@@ -35,13 +35,13 @@ class SyncSubscribersToLists extends BaseCommand
 
         try {
             $failedUsers = $this->syncSubscribersToList();
-            if (!empty($failedUsers)) {
-                $this->error('Failed to add the following users to mailwizz: ' . implode(', ', $failedUsers));
-            }
-
         } catch (Exception $e) {
             $this->error($e->getMessage());
             return 1;
+        }
+
+        if (!empty($failedUsers)) {
+            $this->error('Failed to add the following users to mailwizz: ' . implode(', ', $failedUsers));
         }
 
         $this->info('Done');

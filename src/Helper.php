@@ -23,7 +23,7 @@ class Helper
      * @param $country
      * @return mixed
      */
-    public static function getListIdFromConfig($country)
+    public static function getListIdForCountry($country)
     {
         $countryValues = config('mailwizzsync.lists');
         return $countryValues[$country] ?? $countryValues['ROTW'];

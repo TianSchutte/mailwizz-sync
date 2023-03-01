@@ -38,7 +38,7 @@ trait SubscriberManagementTrait
      */
     public function isSubscriberInLists($user): bool
     {
-        $countryListId = Helper::getListIdFromConfig($user->country);
+        $countryListId = Helper::getListIdForCountry($user->country);
 
         $response = $this->listSubscribersEndpoint->emailSearch($countryListId, $user->email);
 
@@ -65,7 +65,7 @@ trait SubscriberManagementTrait
             'CURRENCY_CODE' => $user->currency_code
         ];
 
-        $countryListId = Helper::getListIdFromConfig($user->country);
+        $countryListId = Helper::getListIdForCountry($user->country);
 
         $response = $this->listSubscribersEndpoint->create($countryListId, $subscriberData);
 
