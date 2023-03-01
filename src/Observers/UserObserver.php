@@ -2,7 +2,7 @@
 
 namespace TianSchutte\MailwizzSync\Observers;
 
-use TianSchutte\MailwizzSync\Services\ListSubscribersService;
+use TianSchutte\MailwizzSync\Services\MailWizzService;
 
 /**
  * @package MailWizzApi
@@ -12,14 +12,14 @@ use TianSchutte\MailwizzSync\Services\ListSubscribersService;
 class UserObserver
 {
     /**
-     * @var ListSubscribersService
+     * @var MailWizzService
      */
     protected $mailwizzService;
 
     /**
-     * @param ListSubscribersService $mailwizzService
+     * @param MailWizzService $mailwizzService
      */
-    public function __construct(ListSubscribersService $mailwizzService)
+    public function __construct(MailWizzService $mailwizzService)
     {
         $this->mailwizzService = $mailwizzService;
     }
@@ -32,7 +32,11 @@ class UserObserver
      */
     public function created($user)
     {
-        $this->mailwizzService->subscribedUserToList($user);
+        try {
+            $this->mailwizzService->subscribedUserToList($user);
+        } catch (\Exception $e) {
+            logger()->error($e->getMessage());
+        }
     }
 
     /**
@@ -44,8 +48,12 @@ class UserObserver
     public function updated($user)
     {
         if ($user->isDirty('status')) {
-            $lists = $this->mailwizzService->getLists();
-            $this->mailwizzService->updateSubscriberStatusByEmailAllLists($user, $lists);
+            try {
+                $lists = $this->mailwizzService->getLists();
+                $this->mailwizzService->updateSubscriberStatusByEmailAllLists($user, $lists);
+            } catch (\ReflectionException|\Exception $e) {
+                logger()->error($e->getMessage());
+            }
         }
     }
 
@@ -57,7 +65,11 @@ class UserObserver
      */
     public function deleted($user)
     {
-        $this->mailwizzService->unsubscribeUserFromAllLists($user);
+        try {
+            $this->mailwizzService->unsubscribeUserFromAllLists($user);
+        } catch (\Exception $e) {
+            logger()->error($e->getMessage());
+        }
     }
 
     /**
@@ -68,7 +80,11 @@ class UserObserver
      */
     public function restored($user)
     {
-        $this->mailwizzService->subscribedUserToList($user);
+        try {
+            $this->mailwizzService->subscribedUserToList($user);
+        } catch (\Exception $e) {
+            logger()->error($e->getMessage());
+        }
     }
 
     /**
@@ -79,6 +95,10 @@ class UserObserver
      */
     public function forceDeleted($user)
     {
-        $this->mailwizzService->unsubscribeUserFromAllLists($user);
+        try {
+            $this->mailwizzService->unsubscribeUserFromAllLists($user);
+        } catch (\Exception $e) {
+            logger()->error($e->getMessage());
+        }
     }
 }

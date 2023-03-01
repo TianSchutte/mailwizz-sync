@@ -2,6 +2,9 @@
 
 namespace TianSchutte\MailwizzSync\Console\Commands;
 
+use Exception;
+use ReflectionException;
+
 /**
  * @package MailWizzApi
  * @author: Tian Schutte
@@ -32,33 +35,45 @@ class SyncSubscribersStatusToLists extends BaseCommand
     {
         $this->info('Syncing All Users Statuses with All MailWizz List Subscribers Statuses');
 
-        app('User')::chunk(self::CHUNK_SIZE, function ($users) {
-            $this->info('Current Chunk Size (' . count($users) . ')');
-            $this->syncSubscriberStatusToLists($users);
-        });
+        try {
+            $lists = $this->mailWizzService->getLists();
+
+            if (empty($lists)) {
+                $this->error('No lists found on mailwizz server');
+                return 1;
+            }
+
+            $this->syncSubscriberStatusToLists($lists);
+        } catch (ReflectionException|Exception $e) {
+            $this->error($e->getMessage());
+            return 1;
+        }
+
 
         $this->info('Done');
         return 0;
     }
 
     /**
-     * @param $users
+     * @param $lists
      * @return void
      */
-    private function syncSubscriberStatusToLists($users)
+    private function syncSubscriberStatusToLists($lists)
     {
-        $lists = $this->mailWizzService->getLists();
-        foreach ($users as $user) {
-            try {
-                $this->info('Syncing ' . $user->email . ' STATUS to mailwizz with ' . $user->player_status);
+        app('User')::chunk($this->chunkSize, function ($users) use ($lists) {
+//            must keep try catch inside the loop, otherwise it will stop on error, and not continue with rest of users?
+            foreach ($users as $user) {
+                try {
+                    $this->info('Syncing ' . $user->email . ' STATUS to mailwizz with ' . $user->player_status);
 
-                $this->mailWizzService->updateSubscriberStatusByEmailAllLists($user, $lists);
+                    $this->mailWizzService->updateSubscriberStatusByEmailAllLists($user, $lists);
 
-            } catch (\Exception $e) {
-                $this->error('Error syncing ' . $user->email . '. Please check mailwizz logs for more details');
-                $this->logger->error($e->getMessage());
-                continue;
+                } catch (Exception $e) {
+                    $this->error('Error syncing ' . $user->email . '. Please check logs for more details');
+                    $this->logger->error($e->getMessage());
+                    continue;
+                }
             }
-        }
+        });
     }
 }

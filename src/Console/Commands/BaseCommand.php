@@ -4,12 +4,12 @@ namespace TianSchutte\MailwizzSync\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
-use TianSchutte\MailwizzSync\Services\ListSubscribersService;
+use TianSchutte\MailwizzSync\Services\MailWizzService;
 
 abstract class BaseCommand extends Command
 {
     /**
-     * @var ListSubscribersService
+     * @var MailWizzService
      */
     protected $mailWizzService;
 
@@ -18,18 +18,22 @@ abstract class BaseCommand extends Command
      */
     protected $logger;
 
-    const CHUNK_SIZE = 100;
+    /**
+     * @var int
+     */
+    protected $chunkSize;
 
     /**
      * Create a new command instance.
      *
      * @return void
      */
-    public function __construct(ListSubscribersService $mailWizzService)
+    public function __construct(MailWizzService $mailWizzService)
     {
         parent::__construct();
 
         $this->mailWizzService = $mailWizzService;
         $this->logger = logger();
+        $this->chunkSize = config('mailwizzsync.chunk_size');
     }
 }

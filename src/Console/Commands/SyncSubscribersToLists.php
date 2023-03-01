@@ -33,12 +33,16 @@ class SyncSubscribersToLists extends BaseCommand
     {
         $this->info('Syncing All Users with MailWizz List Subscribers');
 
-        app('User')::chunk(self::CHUNK_SIZE, function ($users) {
-            $this->info('Current Chunk Size (' . count($users) . ')');
+        try {
+            $failedUsers = $this->syncSubscribersToList();
+            if (!empty($failedUsers)) {
+                $this->error('Failed to add the following users to mailwizz: ' . implode(', ', $failedUsers));
+            }
 
-            $this->syncSubscribersToList($users);
-
-        });
+        } catch (Exception $e) {
+            $this->error($e->getMessage());
+            return 1;
+        }
 
         $this->info('Done');
         return 0;
@@ -46,32 +50,32 @@ class SyncSubscribersToLists extends BaseCommand
 
     /**
      * @description for all users, check if user is on mailwizz, if not add
-     * @param $users
-     * @return void
+     * @return array
+     * @throws Exception
      */
-    private function syncSubscribersToList($users)
+    private function syncSubscribersToList(): array
     {
-        foreach ($users as $user) {
-            $isSubscribed = $this->mailWizzService->isUserSubscribedToList($user);
+        $failedUsers = [];
+        app('User')::chunk($this->chunkSize, function ($users) use (&$failedUsers) {
 
-            if ($isSubscribed) {
-                $this->info($user->email . ' already added to this list');
-                continue;
-            }
+            foreach ($users as $user) {
+                $isSubscribed = $this->mailWizzService->isUserSubscribedToList($user);
 
-            try {
+                if ($isSubscribed) {
+                    $this->info($user->email . ' already added to this list');
+                    continue;
+                }
+
                 $subscribed = $this->mailWizzService->subscribedUserToList($user);
 
                 if ($subscribed) {
                     $this->info('Added ' . $user->email . ' to mailwizz with ' . $user->player_status);
+                } else {
+                    $this->error('Failed to add ' . $user->email . ' to mailwizz with ' . $user->player_status);
+                    $failedUsers[] = $user->email;
                 }
-
-                continue;
-            } catch (Exception $e) {
-                $this->error('Failed adding ' . $user->email . '. Please check mailwizz logs for more details');;
-                $this->logger->error($e->getMessage());
-                continue;
             }
-        }
+        });
+        return $failedUsers;
     }
 }

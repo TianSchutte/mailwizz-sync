@@ -6,7 +6,6 @@ use EmsApi\Base;
 use EmsApi\Cache\File;
 use EmsApi\Config;
 use Exception;
-use ReflectionException;
 
 /**
  * @package MailWizzApi
@@ -15,43 +14,44 @@ use ReflectionException;
  */
 class MailWizzApi
 {
-
+    /**
+     * @throws Exception
+     */
     public function __construct()
     {
-        $this->connect();
+        try {
+            $this->connect();
+        } catch (Exception $e) {
+            throw new Exception("MailWizz API Config Exception: " . $e->getMessage());
+        }
     }
 
     /**
      * @note Make sure filesPath directory is writable in webserver
+     * @throws Exception
      */
     public function connect()
     {
-        //Configuration object (Get your API info from: https://kb.mailwizz.com/articles/find-api-info/)
-        try {
-            $filesPath = config('mailwizzsync.cache_file_path');
+        $filesPath = config('mailwizzsync.cache_file_path');
 
-            $this->createDirectory($filesPath);
+        $this->createDirectory($filesPath);
 
-            $config = new Config([
-                'apiUrl' => config('mailwizzsync.api_url'),
-                'apiKey' => config('mailwizzsync.public_key'),
-                'components' => [
-                    'cache' => [
-                        'class' => File::class,
-                        'filesPath' => $filesPath,
-                    ]
+        $config = new Config([
+            'apiUrl' => config('mailwizzsync.api_url'),
+            'apiKey' => config('mailwizzsync.public_key'),
+            'components' => [
+                'cache' => [
+                    'class' => File::class,
+                    'filesPath' => $filesPath,
                 ]
-            ]);
+            ]
+        ]);
 
-            //Now inject the configuration and we are ready to make api calls
-            Base::setConfig($config);
+        //Now inject the configuration and we are ready to make api calls
+        Base::setConfig($config);
 
-            // start UTC TODO: wasn't included in original, but is it needed?
-            //date_default_timezone_set('UTC');
-
-        } catch (ReflectionException|Exception $e) {
-            logger()->error("MailWizz API Config Exception: " . $e->getMessage());
-        }
+        // start UTC
+        //date_default_timezone_set('UTC');
     }
 
     /**
