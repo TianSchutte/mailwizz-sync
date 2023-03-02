@@ -38,24 +38,5 @@ abstract class BaseCommand extends Command
         $this->mailWizzService = $mailWizzService;
         $this->logger = logger();
         $this->chunkSize = config('mailwizzsync.chunk_size');
-
-        try {
-            $this->validateConnection();
-        } catch (Exception $e) {
-            $this->error($e->getMessage());
-        }
-    }
-
-    /**
-     * @throws ReflectionException
-     * @throws Exception
-     */
-    private function validateConnection()
-    {
-        $endpoint = new Countries();
-        $response = $endpoint->getZones(1);
-        if (!$this->mailWizzService->isEmsResponseSuccessful($response)) {
-            throw new Exception('MailWizz API connection failed. Please check your configuration.');
-        }
     }
 }
