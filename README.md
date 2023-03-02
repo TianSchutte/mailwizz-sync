@@ -58,6 +58,17 @@ php artisan vendor:publish --tag=config
 ],
 'user_class' => App\Models\User::class, //add your user model path here
 ```
+- Another Option is to set the env variables in your .env file
+```php
+'MAILWIZZ_API_URL'
+'MAILWIZZ_API_PUBLIC_KEY'
+'MAILWIZZ_CACHE_FILE_PATH'
+'MAILWIZZ_LISTUID_ROTW'
+'MAILWIZZ_LISTUID_AUNZ'
+'MAILWIZZ_USER_CLASS'
+'MAILWIZZ_CHUNK_SIZE'
+```
+
 - Finally, run the following commands to sync users to the mailwizz from users tables
 ```bash
 php artisan mailwizz:view-lists
