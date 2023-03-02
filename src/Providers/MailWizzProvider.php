@@ -2,10 +2,9 @@
 
 namespace TianSchutte\MailwizzSync\Providers;
 
-use App\Models\User;
 use Illuminate\Support\ServiceProvider;
 use TianSchutte\MailwizzSync\Console\Commands\SyncSubscribersStatusToLists;
-use TianSchutte\MailwizzSync\Console\Commands\SyncSubscribersToList;
+use TianSchutte\MailwizzSync\Console\Commands\SyncSubscribersToLists;
 use TianSchutte\MailwizzSync\Console\Commands\ViewLists;
 use TianSchutte\MailwizzSync\Observers\UserObserver;
 
@@ -17,36 +16,58 @@ use TianSchutte\MailwizzSync\Observers\UserObserver;
 class MailWizzProvider extends ServiceProvider
 {
     /**
+     * Register services.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        $this->mergeConfigFrom(__DIR__ . '/../config/mailwizzsync.php', 'mailwizzsync');
+    }
+
+    /**
      * Bootstrap services.
      *
      * @return void
      */
     public function boot()
     {
-        // Load necessary folders
-        $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
-        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
-//        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'mailwizzsync');
-//        $this->loadViewsFrom(__DIR__ . '/../resources/views/components', 'mailwizzsync');
+        $this->publishes([
+            __DIR__ . '/../config/mailwizzsync.php' => config_path('mailwizzsync.php'),
+        ], 'config');
 
-        // Merge config folder
-        $this->mergeConfigFrom(__DIR__ . '/../config/mailwizz.php', 'mailwizzsync');
+        $this->configureUser();
+        $this->configureCommands();
+    }
 
-        // Binds User Model to package
-        $this->app->bind('User', function ($app) {
-            return new User();//todo resolve frm config
-        });
-
-        // Binds Observer to User Model
-        User::observe(UserObserver::class);
-
-        // Register the command if we are using the application via the CLI
+    /**
+     * Configure commands for the package by registering the commands if we are using the application via the CLI
+     *
+     * @return void
+     */
+    private function configureCommands()
+    {
         if ($this->app->runningInConsole()) {
             $this->commands([
-                SyncSubscribersToList::class,
+                SyncSubscribersToLists::class,
                 SyncSubscribersStatusToLists::class,
                 ViewLists::class,
             ]);
         }
+    }
+
+    /**
+     * Configure user for the package by binding user model to package then observing the model
+     *
+     * @return void
+     */
+    private function configureUser()
+    {
+        $this->app->bind('User', function ($app) {
+            $userClass = config('mailwizzsync.user_class');
+            return new $userClass;
+        });
+
+        app('User')::observe(UserObserver::class);
     }
 }

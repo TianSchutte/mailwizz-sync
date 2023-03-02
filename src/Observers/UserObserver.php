@@ -2,7 +2,8 @@
 
 namespace TianSchutte\MailwizzSync\Observers;
 
-use App\Models\User;
+use Exception;
+use ReflectionException;
 use TianSchutte\MailwizzSync\Services\MailWizzService;
 
 /**
@@ -12,70 +13,134 @@ use TianSchutte\MailwizzSync\Services\MailWizzService;
  */
 class UserObserver
 {
+    /**
+     * @var MailWizzService
+     */
     protected $mailwizzService;
 
-    protected $defaultListId;
-
+    /**
+     * @param MailWizzService $mailwizzService
+     */
     public function __construct(MailWizzService $mailwizzService)
     {
         $this->mailwizzService = $mailwizzService;
-        $this->defaultListId = config('mailwizzsync.default_list_id');
     }
 
     /**
      * Handle the User "created" event.
      *
-     * @param User $user
+     * @param $user
      * @return void
      */
-    public function created(User $user)
+    public function created($user)
     {
-        $this->mailwizzService->subscribedUserToList($user, $this->defaultListId);
+        $isSubscribeToList = false;
+
+        try {
+            $isSubscribeToList = $this->mailwizzService->subscribeToList($user);
+        } catch (Exception $e) {
+            logger()->error($e->getMessage());
+        }
+
+        if (!$isSubscribeToList) {
+            logger()->error(
+                'MailWizz: Could not subscribe user to list', [
+                    'user' => $user->email,
+                ]
+            );
+        }
     }
 
     /**
      * Handle the User "updated" event.
      *
-     * @param User $user
+     * @param $user
      * @return void
      */
-    public function updated(User $user)
+    public function updated($user)
     {
         if ($user->isDirty('status')) {
-            $this->mailwizzService->updateSubscriberStatusByEmailAllLists($user);
+            try {
+                $lists = $this->mailwizzService->getLists();
+                $this->mailwizzService->updateSubscriberStatusLists($user, $lists);
+            } catch (ReflectionException|Exception $e) {
+                logger()->error($e->getMessage());
+            }
         }
     }
 
     /**
      * Handle the User "deleted" event.
      *
-     * @param User $user
+     * @param $user
      * @return void
      */
-    public function deleted(User $user)
+    public function deleted($user)
     {
-        $this->mailwizzService->unsubscribeUserFromAllLists($user);
+        $isUnsubscribeFromLists = false;
+
+        try {
+            $isUnsubscribeFromLists = $this->mailwizzService->unsubscribeFromLists($user);
+        } catch (Exception $e) {
+            logger()->error($e->getMessage());
+        }
+
+        if (!$isUnsubscribeFromLists) {
+            logger()->error(
+                'MailWizz: Could not subscribe user to list', [
+                    'user' => $user->email,
+                ]
+            );
+        }
     }
 
     /**
      * Handle the User "restored" event.
      *
-     * @param User $user
+     * @param $user
      * @return void
      */
-    public function restored(User $user)
+    public function restored($user)
     {
-        $this->mailwizzService->subscribedUserToList($user, $this->defaultListId);
+        $isSubscribeToList = false;
+
+        try {
+            $isSubscribeToList = $this->mailwizzService->subscribeToList($user);
+        } catch (Exception $e) {
+            logger()->error($e->getMessage());
+        }
+
+        if (!$isSubscribeToList) {
+            logger()->error(
+                'MailWizz: Could not subscribe user to list', [
+                    'user' => $user->email,
+                ]
+            );
+        }
     }
 
     /**
      * Handle the User "force deleted" event.
      *
-     * @param User $user
+     * @param $user
      * @return void
      */
-    public function forceDeleted(User $user)
+    public function forceDeleted($user)
     {
-        $this->mailwizzService->unsubscribeUserFromAllLists($user);
+        $isUnsubscribedFromList = false;
+
+        try {
+            $isUnsubscribedFromList = $this->mailwizzService->unsubscribeFromLists($user);
+        } catch (Exception $e) {
+            logger()->error($e->getMessage());
+        }
+
+        if (!$isUnsubscribedFromList) {
+            logger()->error(
+                'MailWizz: Could not subscribe user to list', [
+                    'user' => $user->email,
+                ]
+            );
+        }
     }
 }

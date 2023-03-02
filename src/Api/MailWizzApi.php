@@ -5,60 +5,62 @@ namespace TianSchutte\MailwizzSync\Api;
 use EmsApi\Base;
 use EmsApi\Cache\File;
 use EmsApi\Config;
+use EmsApi\Endpoint\Countries;
 use Exception;
 use ReflectionException;
+use TianSchutte\MailwizzSync\Helper;
 
 /**
  * @package MailWizzApi
- * @description  Holds the MailWizzApi connections
+ * @description  Holds the MailWizzApi connection
  * @author: Tian Schutte
  */
 class MailWizzApi
 {
+    /**
+     * @throws Exception
+     */
     public function __construct()
     {
-        $this->connect();
+        try {
+            $this->connect();
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
     }
 
-
     /**
-     * @note Make sure filesPath variable is writable in webserver ['/data/cache'] is default
-     *       but ['/../MailWizzApi/Cache/data/cache'] is used in original code
-     *      Created a custom folder for now at: storage_path() . 'MailWizz/cache/data'
-     * @return bool
+     * @note Make sure filesPath directory is writable in webserver
+     * @throws Exception
      */
-    public function connect(): bool
+    public function connect()
     {
-        //Configuration object (Get your API info from: https://kb.mailwizz.com/articles/find-api-info/)
-        try {
-            $filesPath = storage_path() . '/MailWizz/data/cache';
+        $apiUrl = config('mailwizzsync.api_url');
+        $apiKey = config('mailwizzsync.public_key');
+        $filesPath = config('mailwizzsync.cache_file_path');
 
-            $this->createDirectory($filesPath);
+        $this->createDirectory($filesPath);
 
-            $config = new Config([
-                'apiUrl' => config('mailwizzsync.api_url'),
-                'apiKey' => config('mailwizzsync.public_key'),
-                'components' => [
-                    'cache' => [
-                        'class' => File::class,
-                        'filesPath' => $filesPath,
-                    ]
-                ],
-            ]);
-
-            //Now inject the configuration and we are ready to make api calls
-            Base::setConfig($config);
-
-            // start UTC TODO: wasn't included in original, but is it needed?
-            //date_default_timezone_set('UTC');
-
-            return true;
-        } catch (ReflectionException $e) {
-            logger()->error("MailWizz API Config Exception: " . $e->getMessage());
-        } catch (Exception $e) {
-            logger()->error("MailWizz API Exception: " . $e->getMessage());
+        if (!$apiUrl || !$apiKey) {
+            throw new Exception('Missing MailWizz API configuration details');
         }
-        return false;
+
+        $config = new Config([
+            'apiUrl' => $apiUrl,
+            'apiKey' => $apiKey,
+            'components' => [
+                'cache' => [
+                    'class' => File::class,
+                    'filesPath' => $filesPath,
+                ]
+            ]
+        ]);
+
+        //Now inject the configuration and we are ready to make api calls
+        Base::setConfig($config);
+
+        // start UTC
+        date_default_timezone_set('UTC');
     }
 
     /**

@@ -2,14 +2,14 @@
 
 namespace TianSchutte\MailwizzSync\Console\Commands;
 
-use Illuminate\Console\Command;
-use TianSchutte\MailwizzSync\Services\MailWizzService;
+use Exception;
+use ReflectionException;
 
 /**
  * @package MailWizzApi
  * @author: Tian Schutte
  */
-class ViewLists extends Command
+class ViewLists extends BaseCommand
 {
     /**
      * The name and signature of the console command.
@@ -26,33 +26,27 @@ class ViewLists extends Command
     protected $description = 'View a list of all the lists on the mailwizz server';
 
     /**
-     * @var MailWizzService
-     */
-    protected $mailWizzService;
-
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct(MailWizzService $mailWizzService)
-    {
-        parent::__construct();
-
-        $this->mailWizzService = $mailWizzService;
-    }
-
-
-    /**
      * Execute the console command.
      *
      * @return int
      */
     public function handle()
     {
+        try {
+            $lists = $this->mailWizzService->getLists();
+        } catch (ReflectionException|Exception $e) {
+            $this->error($e->getMessage());
+            return 1;
+        }
+
+        if (empty($lists)) {
+            $this->error('No lists found on mailwizz server');
+            return 1;
+        }
+
         $this->info('All Current MailWizz Lists:');
 
-        foreach ($this->mailWizzService->getLists() as $list) {
+        foreach ($lists as $list) {
             $this->info(
                 sprintf(" - %s : %s : %s",
                     $list['list_uid'],
@@ -64,8 +58,4 @@ class ViewLists extends Command
 
         return 0;
     }
-
 }
-////check if user has a base status of Unsubscribed, if so don't add to list
-//if ($curSubscriber->body->toArray()['data']['status'] != 'Unsubscribed') {
-//}

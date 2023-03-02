@@ -2,15 +2,14 @@
 
 namespace TianSchutte\MailwizzSync\Console\Commands;
 
-use App\Models\User;
-use Illuminate\Console\Command;
-use TianSchutte\MailwizzSync\Services\MailWizzService;
+use Exception;
+use ReflectionException;
 
 /**
  * @package MailWizzApi
  * @author: Tian Schutte
  */
-class SyncSubscribersStatusToLists extends Command
+class SyncSubscribersStatusToLists extends BaseCommand
 {
 
     /**
@@ -28,23 +27,6 @@ class SyncSubscribersStatusToLists extends Command
     protected $description = 'Syncs the statuses of users on the app with the statuses of the users on all mailwizz lists';
 
     /**
-     * @var MailWizzService
-     */
-    protected $mailWizzService;
-
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct(MailWizzService $mailWizzService)
-    {
-        parent::__construct();
-
-        $this->mailWizzService = $mailWizzService;
-    }
-
-    /**
      * Execute the console command.
      *
      * @return int
@@ -53,34 +35,44 @@ class SyncSubscribersStatusToLists extends Command
     {
         $this->info('Syncing All Users Statuses with All MailWizz List Subscribers Statuses');
 
-        User::chunk(100, function ($users) {
-            $this->info('Current Chunk Size (' . count($users) . ')');
-            $this->syncSubscriberStatusToLists($users);
-        });
+        try {
+            $lists = $this->mailWizzService->getLists();
+        } catch (ReflectionException|Exception $e) {
+            $this->error($e->getMessage());
+            return 1;
+        }
+
+        if (empty($lists)) {
+            $this->error('No lists found on mailwizz server');
+            return 1;
+        }
+
+        $this->syncSubscriberStatusToLists($lists);
 
         $this->info('Done');
         return 0;
     }
 
     /**
-     * @param $users
+     * @param $lists
      * @return void
      */
-    private function syncSubscriberStatusToLists($users)
+    private function syncSubscriberStatusToLists($lists)
     {
-        foreach ($users as $user)
-        {
-            try {
-                $this->info('Syncing ' . $user->email . ' STATUS to mailwizz with ' . $user->status);
+        app('User')::chunk($this->chunkSize, function ($users) use ($lists) {
+//            must keep try catch inside the loop, otherwise it will stop on error, and not continue with rest of users?
+            foreach ($users as $user) {
+                try {
+                    $this->info('Syncing ' . $user->email . ' STATUS to mailwizz with ' . $user->player_status);
 
-                $this->mailWizzService->updateSubscriberStatusByEmailAllLists($user);
+                    $this->mailWizzService->updateSubscriberStatusLists($user, $lists);
 
-            } catch (\Exception $e) {
-                $this->error('Error syncing ' . $user->email . ' STATUS to mailwizz with ' . $user->status);
-                $this->error($e->getMessage());
-                continue;
+                } catch (Exception $e) {
+                    $this->error('Error syncing ' . $user->email . '. Please check logs for more details');
+                    $this->logger->error($e->getMessage());
+                    continue;
+                }
             }
-        }
+        });
     }
-
 }

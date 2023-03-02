@@ -3,8 +3,7 @@
     "description": "a package to sync players to mail listings",
     "autoload": {
         "psr-4": {
-            "Tianschutte\\": "src/",
-            "EmsApi\\": "vendor/ems-api/php-client/src/"
+            "TianSchutte\\MailwizzSync\\": "src/"
         }
     },
     "authors": [
@@ -14,7 +13,7 @@
         }
     ],
     "require": {
-        "guzzlehttp/guzzle": "^7.0.1",
-        "ems-api/php-client": "dev-master"
+        "guzzlehttp/guzzle": "^6.3",
+        "ems-api/php-client": "^1.0"
     }
 }
