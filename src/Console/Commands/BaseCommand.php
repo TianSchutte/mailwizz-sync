@@ -7,7 +7,6 @@ use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use ReflectionException;
-use TianSchutte\MailwizzSync\Helper;
 use TianSchutte\MailwizzSync\Services\MailWizzService;
 
 abstract class BaseCommand extends Command
@@ -42,7 +41,7 @@ abstract class BaseCommand extends Command
 
         try {
             $this->validateConnection();
-        }catch (Exception $e) {
+        } catch (Exception $e) {
             $this->error($e->getMessage());
         }
     }
