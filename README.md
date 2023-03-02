@@ -32,7 +32,7 @@ This package provides methods and commands for managing subscribers of email lis
 - Add package to project
 
 ```composer
-composer require tianschutte/mailwizz-sync
+composer require tianschutte/mailwizz-sync (php composer.phar require tianschutte/mailwizz-sync)
 ```
 
 - In Project Driectory add the Service Provider Call in `/config/app.php`
@@ -48,15 +48,18 @@ php artisan vendor:publish --tag=config
 
 - In the newly copied config file called mailwizzsync.php in `/config/mailwizzsync.php` make sure all details are set correctly
 ```php
-'api_url' => 'http://mailwizz.test/api/',
-'public_key' => 'add_key_here',
-'lists' => [
-    'ROTW' => 'default_list_uid',
-    'AU' => 'list_uid_here',
-    'NZ' => 'list_uid_here',
-    //Can add more country lists here if needed
-],
-'user_class' => App\Models\User::class, //add your user model path here
+
+    'api_url' => env('MAILWIZZ_API_URL', 'https://base.url.com/api/index.php/'),
+    'public_key' => env('MAILWIZZ_API_PUBLIC_KEY', 'api_key'),
+    'cache_file_path' => env('MAILWIZZ_CACHE_FILE_PATH',storage_path('MailWizz/data/cache')),
+    'lists' => [
+        'ROTW' =>  env('MAILWIZZ_LISTUID_ROTW','list_1_id'),
+        'AU' =>  env('MAILWIZZ_LISTUID_AUNZ','list_2_id'),
+        'NZ' =>  env('MAILWIZZ_LISTUID_AUNZ','list_2_id'),
+            //Can add more country lists here if needed
+    ],
+    'user_class' =>  env('MAILWIZZ_USER_CLASS',config('auth.providers.users.model')), //add your user model path here
+    'chunk_size' => env('MAILWIZZ_CHUNK_SIZE', 50),
 ```
 - Another Option is to set the env variables in your .env file
 ```php
