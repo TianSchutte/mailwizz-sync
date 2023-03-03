@@ -24,6 +24,7 @@ class UserObserver
     public function __construct(MailWizzService $mailwizzService)
     {
         $this->mailwizzService = $mailwizzService;
+
     }
 
     /**
@@ -59,10 +60,13 @@ class UserObserver
      */
     public function updated($user)
     {
-        if ($user->isDirty('status')) {
+
+        if ($user->isDirty('player_status')) {
             try {
                 $lists = $this->mailwizzService->getLists();
                 $this->mailwizzService->updateSubscriberStatusLists($user, $lists);
+
+
             } catch (ReflectionException|Exception $e) {
                 logger()->error($e->getMessage());
             }
