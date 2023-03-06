@@ -63,6 +63,8 @@ php artisan vendor:publish --tag=config
     'user_class' =>  env('MAILWIZZ_USER_CLASS',config('auth.providers.users.model')), //add your user model path here
     'chunk_size' => env('MAILWIZZ_CHUNK_SIZE', 50),
     'csv_file_path' => env('MAILWIZZ_CSV_FILE_PATH',public_path()),
+    'player_status_history_class' =>  env('MAILWIZZ_STATUS_HISTORY_CLASS', \App\Models\Member\PlayerStatusHistory::class),
+
 ```
 - Another Option is to set the env variables in your .env file
 ```php
@@ -75,10 +77,16 @@ php artisan vendor:publish --tag=config
 'MAILWIZZ_CHUNK_SIZE'
 'MAILWIZZ_CSV_FILE_PATH'
 ```
-
+- Queues: To allow the user observer to do its job, you must have a queue setup and running. If you don't have a queue setup, you can use the following commands to create and run the queue in the background
+```bash
+php artisan queue:table
+php artisan migrate
+php artisan queue:work 
+```
 - Finally, run the following commands to sync users to the mailwizz from users tables
 ```bash
 php artisan mailwizz:export-users # or add --countries to export users only on countries listed on config
+php artisan mailwizz:sync-bulk-status {date in YYYY-MM-DD format}
 php artisan mailwizz:view-lists
 php artisan mailwizz:sync-subscribers-lists
 php artisan mailwizz:sync-subscribers-status-lists

@@ -57,7 +57,7 @@ class SyncSubscribersStatusToLists extends BaseCommand
                     $this->mailWizzService->updateSubscriberStatusLists($user, $lists);
                 } catch (Exception $e) {
                     $this->error(sprintf("Error syncing %s. Please check logs for more details", $user->email));
-                    $this->logger->error($e->getMessage());
+                    logger()->error($e->getMessage());
                     continue;
                 }
             }

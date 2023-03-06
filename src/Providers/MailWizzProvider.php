@@ -3,7 +3,7 @@
 namespace TianSchutte\MailwizzSync\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use TianSchutte\MailwizzSync\Console\Commands\BatchSyncSubscribers;
+use TianSchutte\MailwizzSync\Console\Commands\BulkSyncSubscribers;
 use TianSchutte\MailwizzSync\Console\Commands\ExportUsers;
 use TianSchutte\MailwizzSync\Console\Commands\SyncSubscribersStatusToLists;
 use TianSchutte\MailwizzSync\Console\Commands\SyncSubscribersToLists;
@@ -56,7 +56,7 @@ class MailWizzProvider extends ServiceProvider
                 SyncSubscribersStatusToLists::class,
                 ViewLists::class,
                 ExportUsers::class,
-                BatchSyncSubscribers::class,
+                BulkSyncSubscribers::class,
             ]);
         }
     }
