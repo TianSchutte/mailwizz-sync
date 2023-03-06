@@ -29,7 +29,7 @@ abstract class BaseCommand extends Command
         parent::__construct();
 
         $this->mailWizzService = $mailWizzService;
-        $this->chunkSize = config('mailwizzsync.chunk_size');
+        $this->chunkSize = config('mailwizzsync.defaults.chunk_size');
     }
 
     /**

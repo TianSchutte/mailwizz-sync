@@ -36,7 +36,7 @@ class ExportUsers extends BaseCommand
             ? 'users_countries_' . time() . '.csv'
             : 'users_rotw_' . time() . '.csv';
 
-        $filepath = config('mailwizzsync.csv_file_path') . '/' . $filename;
+        $filepath = config('mailwizzsync.defaults.csv_file_path') . '/' . $filename;
 
         $csv = Writer::createFromPath($filepath, 'w+');
 
@@ -108,7 +108,7 @@ class ExportUsers extends BaseCommand
     private function getAllListKeysExceptROTW(): array
     {
         try {
-            $allKeys = array_keys(config('mailwizzsync.lists'));
+            $allKeys = array_keys(config('mailwizzsync.mailwizz.lists'));
             return array_diff($allKeys, ['ROTW']);
         } catch (Exception $e) {
             throw new Exception('Error getting list keys: ' . $e->getMessage());

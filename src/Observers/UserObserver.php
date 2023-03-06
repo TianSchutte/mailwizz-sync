@@ -46,9 +46,12 @@ class UserObserver
      */
     public function updated($user)
     {
-        if ($user->isDirty('player_status')) {
-            UpdatePlayerStatusToListsJob::dispatch($user, $this->mailwizzService);
-        }
+        UpdatePlayerStatusToListsJob::dispatchIf
+        (
+            $user->isDirty('player_status'),
+            $user,
+            $this->mailwizzService
+        );
     }
 
     /**

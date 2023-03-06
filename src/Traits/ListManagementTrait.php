@@ -22,7 +22,7 @@ trait ListManagementTrait
 
         $records = $response->body->toArray()['data']['records'];
 
-        $chunks = array_chunk($records, config('mailwizzsync.chunk_size'));
+        $chunks = array_chunk($records, config('mailwizzsync.defaults.chunk_size'));
 
         foreach ($chunks as $chunk) {
             foreach ($chunk as $list) {
@@ -42,9 +42,9 @@ trait ListManagementTrait
      * @param $country
      * @return mixed
      */
-    public static function getListIdForCountry($country)
+    public function getListIdForCountry($country)
     {
-        $countryValues = config('mailwizzsync.lists');
+        $countryValues = config('mailwizzsync.mailwizz.lists');
         return $countryValues[$country] ?? $countryValues['ROTW'];
     }
 }

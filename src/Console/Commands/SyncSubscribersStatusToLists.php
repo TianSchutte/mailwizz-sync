@@ -3,7 +3,6 @@
 namespace TianSchutte\MailwizzSync\Console\Commands;
 
 use Exception;
-use ReflectionException;
 
 /**
  * @package MailWizzApi
@@ -53,7 +52,7 @@ class SyncSubscribersStatusToLists extends BaseCommand
 //            must keep try catch inside the loop, otherwise it will stop on error, and not continue with rest of users?
             foreach ($users as $user) {
                 try {
-                    $this->info(sprintf( "Syncing %s STATUS to mailwizz with %s", $user->email,$user->player_status));
+                    $this->info(sprintf("Syncing %s STATUS to mailwizz with %s", $user->email, $user->player_status));
                     $this->mailWizzService->updateSubscriberStatusLists($user, $lists);
                 } catch (Exception $e) {
                     $this->error(sprintf("Error syncing %s. Please check logs for more details", $user->email));

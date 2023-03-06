@@ -2,8 +2,6 @@
 
 namespace TianSchutte\MailwizzSync\Console\Commands;
 
-use Exception;
-use ReflectionException;
 
 /**
  * @package MailWizzApi

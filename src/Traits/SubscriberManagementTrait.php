@@ -21,7 +21,7 @@ trait SubscriberManagementTrait
 
         $listIds = array_column($lists, 'list_uid');
 
-        $chunks = array_chunk($listIds, config('mailwizzsync.chunk_size'));
+        $chunks = array_chunk($listIds, config('mailwizzsync.defaults.chunk_size'));
 
         foreach ($chunks as $chunk) {
             foreach ($chunk as $listId) {
@@ -88,7 +88,6 @@ trait SubscriberManagementTrait
      */
     public function unsubscribeFromLists($user): bool
     {
-
         $response = $this->listSubscribersEndpoint->unsubscribeByEmailFromAllLists($user->email);
 
         if (!$this->isEmsResponseSuccessful($response)) {
@@ -192,7 +191,7 @@ trait SubscriberManagementTrait
      * @param $response
      * @return bool
      */
-    public static function isEmsResponseSuccessful($response): bool
+    public function isEmsResponseSuccessful($response): bool
     {
         $isSuccessful = $response->getHttpCode() >= 200 && $response->getHttpCode() < 400;
         if (!$isSuccessful) return false;

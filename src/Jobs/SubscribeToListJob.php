@@ -3,35 +3,9 @@
 namespace TianSchutte\MailwizzSync\Jobs;
 
 use Exception;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use TianSchutte\MailwizzSync\Services\MailWizzService;
 
-class SubscribeToListJob implements ShouldQueue
+class SubscribeToListJob extends BaseJob
 {
-    use Dispatchable;
-
-    /**
-     * @var
-     */
-    protected $user;
-
-    /**
-     * @var MailWizzService
-     */
-    protected $mailWizzService;
-
-
-    /**
-     * @param $user
-     * @param MailWizzService $mailWizzService
-     */
-    public function __construct($user, MailWizzService $mailWizzService)
-    {
-        $this->mailWizzService = $mailWizzService;
-        $this->user = $user;
-    }
-
     /**
      * @return void
      */
@@ -42,7 +16,7 @@ class SubscribeToListJob implements ShouldQueue
         try {
             $isSubscribeToList = $this->mailWizzService->subscribeToList($this->user);
         } catch (Exception $e) {
-            logger()->error($e->getMessage());
+            throw new Exception($e->getMessage());
         }
 
         if (!$isSubscribeToList) {
@@ -51,6 +25,21 @@ class SubscribeToListJob implements ShouldQueue
                     'user' => $this->user->email,
                 ]
             );
+            $this->release($this->releaseTime);
         }
+    }
+
+    /**
+     * @param Exception $exception
+     * @return void
+     */
+    public function failed(Exception $exception)
+    {
+        logger()->error(
+            'MailWizz: Could not subscribe user to list', [
+                'User' => $this->user->email,
+                'Exception' => $exception->getMessage(),
+            ]
+        );
     }
 }

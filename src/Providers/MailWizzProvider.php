@@ -69,7 +69,7 @@ class MailWizzProvider extends ServiceProvider
     private function configureUser()
     {
         $this->app->bind('User', function ($app) {
-            $userClass = config('mailwizzsync.user_class');
+            $userClass = config('mailwizzsync.defaults.user_class');
             return new $userClass;
         });
 
@@ -84,7 +84,7 @@ class MailWizzProvider extends ServiceProvider
     private function configurePlayerStatusHistory()
     {
         $this->app->bind('PlayerStatusHistory', function ($app) {
-            $userClass = config('mailwizzsync.player_status_history_class');
+            $userClass = config('mailwizzsync.defaults.player_status_history_class');
             return new $userClass;
         });
     }

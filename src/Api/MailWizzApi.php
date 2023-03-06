@@ -5,10 +5,7 @@ namespace TianSchutte\MailwizzSync\Api;
 use EmsApi\Base;
 use EmsApi\Cache\File;
 use EmsApi\Config;
-use EmsApi\Endpoint\Countries;
 use Exception;
-use ReflectionException;
-use TianSchutte\MailwizzSync\Helper;
 
 /**
  * @package MailWizzApi
@@ -35,9 +32,9 @@ class MailWizzApi
      */
     public function connect()
     {
-        $apiUrl = config('mailwizzsync.api_url');
-        $apiKey = config('mailwizzsync.public_key');
-        $filesPath = config('mailwizzsync.cache_file_path');
+        $apiUrl = config('mailwizzsync.mailwizz.api_url');
+        $apiKey = config('mailwizzsync.mailwizz.public_key');
+        $filesPath = config('mailwizzsync.mailwizz.cache_file_path');
 
         $this->createDirectory($filesPath);
 
