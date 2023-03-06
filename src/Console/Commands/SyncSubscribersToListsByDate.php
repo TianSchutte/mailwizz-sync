@@ -6,21 +6,21 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\Console\Input\InputArgument;
 
-class BulkSyncSubscribers extends BaseCommand
+class SyncSubscribersToListsByDate extends BaseCommand
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'mailwizz:sync-bulk-status';
+    protected $signature = 'mailwizz:sync-subscribers-lists-status-date';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Bulk sync player status from a given date';
+    protected $description = 'Bulk sync player status from a given date.  Add the date as an argument, as YYYY-MM-DD.';
 
     /**
      * Define the command's arguments and options.
@@ -37,6 +37,10 @@ class BulkSyncSubscribers extends BaseCommand
      */
     public function handle()
     {
+        if (!app('PlayerStatusHistory')) {
+            throw new Exception('PlayerStatusHistory model not found');
+        }
+
         $this->info('Syncing All Users with MailWizz List Subscribers from the specified date');
 
         $date = $this->argument('dateFrom');
@@ -45,7 +49,7 @@ class BulkSyncSubscribers extends BaseCommand
 
         try {
             $this->syncSubscribersStatusToLists($lists, $date);
-        }catch (Exception $e){
+        } catch (Exception $e) {
             $this->error($e->getMessage());
             return 1;
         }
@@ -61,10 +65,6 @@ class BulkSyncSubscribers extends BaseCommand
      */
     private function syncSubscribersStatusToLists($lists, $date)
     {
-        if(!app('PlayerStatusHistory')){
-            throw new Exception('PlayerStatusHistory model not found');
-        }
-
         $statusHistories = app('PlayerStatusHistory')
             ->with('user')
             ->select('user_id', DB::raw('MAX(created_at) as latest_status_date'))
@@ -93,7 +93,7 @@ class BulkSyncSubscribers extends BaseCommand
                 $hasStatusChanged = $latestStatus->changed_status !== $curStatus;
 
                 if ($hasStatusChanged) {
-                    $this->info(sprintf( "Syncing %s STATUS to mailwizz with %s", $user->email, $latestStatus->changed_status));
+                    $this->info(sprintf("Syncing %s STATUS to mailwizz with %s", $user->email, $latestStatus->changed_status));
                     $this->mailWizzService->updateSubscriberStatusLists($user, $lists, $latestStatus->changed_status);
                 }
 

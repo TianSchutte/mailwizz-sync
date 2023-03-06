@@ -35,7 +35,8 @@ abstract class BaseCommand extends Command
     /**
      * @return array|int
      */
-    protected function getLists(){
+    protected function getLists()
+    {
         try {
             $lists = $this->mailWizzService->getLists();
         } catch (ReflectionException|Exception $e) {

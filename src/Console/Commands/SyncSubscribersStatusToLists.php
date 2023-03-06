@@ -16,7 +16,7 @@ class SyncSubscribersStatusToLists extends BaseCommand
      *
      * @var string
      */
-    protected $signature = 'mailwizz:sync-subscribers-status-lists';
+    protected $signature = 'mailwizz:sync-subscribers-lists-status';
 
     /**
      * The console command description.

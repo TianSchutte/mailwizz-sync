@@ -78,15 +78,21 @@ return [
 ];
 ```
 - Another Option is to set the env variables in your .env file
-```php
-'MAILWIZZ_API_URL'
-'MAILWIZZ_API_PUBLIC_KEY'
-'MAILWIZZ_CACHE_FILE_PATH'
-'MAILWIZZ_LISTUID_ROTW'
-'MAILWIZZ_LISTUID_AUNZ'
-'MAILWIZZ_USER_CLASS'
-'MAILWIZZ_CHUNK_SIZE'
-'MAILWIZZ_CSV_FILE_PATH'
+```dotenv
+MAILWIZZ_API_URL=
+MAILWIZZ_API_PUBLIC_KEY=
+MAILWIZZ_CACHE_FILE_PATH=storage_path('MailWizz/data/cache')
+MAILWIZZ_LISTUID_ROTW=
+MAILWIZZ_LISTUID_AUNZ=
+MAILWIZZ_USER_CLASS=config('auth.providers.users.model')
+MAILWIZZ_CHUNK_SIZE=50
+MAILWIZZ_CSV_FILE_PATH=public_path()
+MAILWIZZ_STATUS_HISTORY_CLASS=\App\Models\Member\PlayerStatusHistory::class
+MAILWIZZ_QUEUE_TRIES=3
+MAILWIZZ_QUEUE_TIMEOUT=60
+MAILWIZZ_QUEUE_BACKOFF=[2,5,10]
+MAILWIZZ_QUEUE_MAX_EXCEPTIONS=3
+MAILWIZZ_QUEUE_RELEASE_TIME=10
 ```
 - Queues: To allow the user observer to do its job, you must have a queue setup and running. If you don't have a queue setup, you can use the following commands to create and run the queue in the background
 ```bash
@@ -96,11 +102,11 @@ php artisan queue:work
 ```
 - Finally, run the following commands to sync users to the mailwizz from users tables
 ```bash
-php artisan mailwizz:export-users # or add --countries to export users only on countries listed on config
-php artisan mailwizz:sync-bulk-status {date in YYYY-MM-DD format}
-php artisan mailwizz:view-lists
-php artisan mailwizz:sync-subscribers-lists
-php artisan mailwizz:sync-subscribers-status-lists
+mailwizz:sync-subscribers-lists             Sync all users into the specified mailwizz list subscribers                                                  
+mailwizz:sync-subscribers-lists-status      Syncs the statuses of users on the app with the statuses of the users on all mailwizz lists                  
+mailwizz:sync-subscribers-lists-status-date Bulk sync player status from a given date.  Add the date as an argument, as YYYY-MM-DD.  
+mailwizz:view-lists                         View a list of all the lists on the mailwizz server                                                          
+mailwizz:export-users                       Export users to a CSV file. add --countries boolean to only export users from countries specified in config  
 ```
 
 
