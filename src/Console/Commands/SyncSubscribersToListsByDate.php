@@ -88,14 +88,10 @@ class SyncSubscribersToListsByDate extends BaseCommand
             $user = $latestStatus->user;
 
             try {
-                $curStatus = $this->mailWizzService->getSubscriberPlayerStatusOnLists($user, $lists);
-
-                $hasStatusChanged = $latestStatus->changed_status !== $curStatus;
-
-                if ($hasStatusChanged) {
-                    $this->info(sprintf("Syncing %s STATUS to mailwizz with %s", $user->email, $latestStatus->changed_status));
-                    $this->mailWizzService->updateSubscriberStatusLists($user, $lists, $latestStatus->changed_status);
-                }
+//                if ($latestStatus->changed_status !== $this->mailWizzService->getSubscriberPlayerStatusOnLists($user, $lists);) {
+                $this->info(sprintf("Syncing %s STATUS to mailwizz with %s", $user->email, $latestStatus->changed_status));
+                $this->mailWizzService->updateSubscriberStatusLists($user, $lists, $latestStatus->changed_status);
+//                }
 
             } catch (Exception $e) {
                 $this->error(sprintf("Error syncing %s. Please check logs for more details", $user->email));
