@@ -10,5 +10,7 @@ return [
         'NZ' =>  env('MAILWIZZ_LISTUID_AUNZ','list_2_id'),
     ],
     'user_class' =>  env('MAILWIZZ_USER_CLASS',config('auth.providers.users.model')),
+    'player_status_history_class' =>  env('MAILWIZZ_STATUS_HISTORY_CLASS', \App\Models\Member\PlayerStatusHistory::class),
     'chunk_size' => env('MAILWIZZ_CHUNK_SIZE', 50),
+    'csv_file_path' => env('MAILWIZZ_CSV_FILE_PATH',public_path()),
 ];

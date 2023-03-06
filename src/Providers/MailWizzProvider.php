@@ -3,6 +3,8 @@
 namespace TianSchutte\MailwizzSync\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use TianSchutte\MailwizzSync\Console\Commands\BatchSyncSubscribers;
+use TianSchutte\MailwizzSync\Console\Commands\ExportUsers;
 use TianSchutte\MailwizzSync\Console\Commands\SyncSubscribersStatusToLists;
 use TianSchutte\MailwizzSync\Console\Commands\SyncSubscribersToLists;
 use TianSchutte\MailwizzSync\Console\Commands\ViewLists;
@@ -38,6 +40,7 @@ class MailWizzProvider extends ServiceProvider
 
         $this->configureUser();
         $this->configureCommands();
+        $this->configurePlayerStatusHistory();
     }
 
     /**
@@ -52,6 +55,8 @@ class MailWizzProvider extends ServiceProvider
                 SyncSubscribersToLists::class,
                 SyncSubscribersStatusToLists::class,
                 ViewLists::class,
+                ExportUsers::class,
+                BatchSyncSubscribers::class,
             ]);
         }
     }
@@ -69,5 +74,18 @@ class MailWizzProvider extends ServiceProvider
         });
 
         app('User')::observe(UserObserver::class);
+    }
+
+    /**
+     * Configure PlayerStatusHistory for the package by binding the model to package
+     *
+     * @return void
+     */
+    private function configurePlayerStatusHistory()
+    {
+        $this->app->bind('PlayerStatusHistory', function ($app) {
+            $userClass = config('mailwizzsync.player_status_history_class');
+            return new $userClass;
+        });
     }
 }

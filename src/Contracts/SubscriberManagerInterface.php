@@ -15,4 +15,8 @@ interface SubscriberManagerInterface
     public function unSubscribeFromList($user, $listId): bool;
 
     public function deleteSubscriberFromList($user, $listId): bool;
+
+    public function getSubscriberPlayerStatusOnLists($user, $lists);
+
+    public function getSubscriber($subscriber_id, $listId);
 }

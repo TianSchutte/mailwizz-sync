@@ -2,7 +2,6 @@
 
 namespace TianSchutte\MailwizzSync\Console\Commands;
 
-use EmsApi\Endpoint\Countries;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -38,5 +37,23 @@ abstract class BaseCommand extends Command
         $this->mailWizzService = $mailWizzService;
         $this->logger = logger();
         $this->chunkSize = config('mailwizzsync.chunk_size');
+    }
+
+    /**
+     * @return array|int
+     */
+    protected function getLists(){
+        try {
+            $lists = $this->mailWizzService->getLists();
+        } catch (ReflectionException|Exception $e) {
+            $this->error($e->getMessage());
+            return 1;
+        }
+
+        if (empty($lists)) {
+            $this->error('No lists found on mailwizz server');
+            return 1;
+        }
+        return $lists;
     }
 }

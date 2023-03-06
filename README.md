@@ -16,16 +16,18 @@ This package provides methods and commands for managing subscribers of email lis
     -> Tag*: FNAME
     -> Tag*: LNAME
     -> Tag*: COUNTRY
-    -> Tag*: STATUS
+    -> Tag*: PLAYER_STATUS
     -> Tag*: CURRENCY_CODE
+    -> Tag*: DATE_UPDATED
     
 -> Name*: AU/NZ (Australia and New Zealand)
     -> Tag*: EMAIL
     -> Tag*: FNAME
     -> Tag*: LNAME
     -> Tag*: COUNTRY
-    -> Tag*: STATUS
+    -> Tag*: PLAYER_STATUS
     -> Tag*: CURRENCY_CODE
+    -> Tag*: DATE_UPDATED
 ```
 
 ### Package Setup
@@ -60,6 +62,7 @@ php artisan vendor:publish --tag=config
     ],
     'user_class' =>  env('MAILWIZZ_USER_CLASS',config('auth.providers.users.model')), //add your user model path here
     'chunk_size' => env('MAILWIZZ_CHUNK_SIZE', 50),
+    'csv_file_path' => env('MAILWIZZ_CSV_FILE_PATH',public_path()),
 ```
 - Another Option is to set the env variables in your .env file
 ```php
@@ -70,10 +73,12 @@ php artisan vendor:publish --tag=config
 'MAILWIZZ_LISTUID_AUNZ'
 'MAILWIZZ_USER_CLASS'
 'MAILWIZZ_CHUNK_SIZE'
+'MAILWIZZ_CSV_FILE_PATH'
 ```
 
 - Finally, run the following commands to sync users to the mailwizz from users tables
 ```bash
+php artisan mailwizz:export-users # or add --countries to export users only on countries listed on config
 php artisan mailwizz:view-lists
 php artisan mailwizz:sync-subscribers-lists
 php artisan mailwizz:sync-subscribers-status-lists
