@@ -3,14 +3,17 @@
 namespace TianSchutte\MailwizzSync\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use TianSchutte\MailwizzSync\Console\Commands\SyncSubscribersToListsByDate;
+use TianSchutte\MailwizzSync\Console\Commands\ExportUsers;
 use TianSchutte\MailwizzSync\Console\Commands\SyncSubscribersStatusToLists;
 use TianSchutte\MailwizzSync\Console\Commands\SyncSubscribersToLists;
 use TianSchutte\MailwizzSync\Console\Commands\ViewLists;
 use TianSchutte\MailwizzSync\Observers\UserObserver;
 
 /**
- * @package MailWizzApi
+ * @package MailWizzSync
  * @description MailWizz Service Provider to load all necessary files and bind models to package
+ * @licence Giant Outsourcing
  * @author: Tian Schutte
  */
 class MailWizzProvider extends ServiceProvider
@@ -38,6 +41,7 @@ class MailWizzProvider extends ServiceProvider
 
         $this->configureUser();
         $this->configureCommands();
+        $this->configurePlayerStatusHistory();
     }
 
     /**
@@ -52,6 +56,8 @@ class MailWizzProvider extends ServiceProvider
                 SyncSubscribersToLists::class,
                 SyncSubscribersStatusToLists::class,
                 ViewLists::class,
+                ExportUsers::class,
+                SyncSubscribersToListsByDate::class,
             ]);
         }
     }
@@ -64,10 +70,23 @@ class MailWizzProvider extends ServiceProvider
     private function configureUser()
     {
         $this->app->bind('User', function ($app) {
-            $userClass = config('mailwizzsync.user_class');
+            $userClass = config('mailwizzsync.defaults.user_class');
             return new $userClass;
         });
 
         app('User')::observe(UserObserver::class);
+    }
+
+    /**
+     * Configure PlayerStatusHistory for the package by binding the model to package
+     *
+     * @return void
+     */
+    private function configurePlayerStatusHistory()
+    {
+        $this->app->bind('PlayerStatusHistory', function ($app) {
+            $userClass = config('mailwizzsync.defaults.player_status_history_class');
+            return new $userClass;
+        });
     }
 }

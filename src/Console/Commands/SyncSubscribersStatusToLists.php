@@ -3,10 +3,10 @@
 namespace TianSchutte\MailwizzSync\Console\Commands;
 
 use Exception;
-use ReflectionException;
 
 /**
- * @package MailWizzApi
+ * @package MailWizzSync
+ * @licence Giant Outsourcing
  * @author: Tian Schutte
  */
 class SyncSubscribersStatusToLists extends BaseCommand
@@ -17,7 +17,7 @@ class SyncSubscribersStatusToLists extends BaseCommand
      *
      * @var string
      */
-    protected $signature = 'mailwizz:sync-subscribers-status-lists';
+    protected $signature = 'mailwizz:sync-subscribers-lists-status';
 
     /**
      * The console command description.
@@ -35,17 +35,7 @@ class SyncSubscribersStatusToLists extends BaseCommand
     {
         $this->info('Syncing All Users Statuses with All MailWizz List Subscribers Statuses');
 
-        try {
-            $lists = $this->mailWizzService->getLists();
-        } catch (ReflectionException|Exception $e) {
-            $this->error($e->getMessage());
-            return 1;
-        }
-
-        if (empty($lists)) {
-            $this->error('No lists found on mailwizz server');
-            return 1;
-        }
+        $lists = $this->getLists();
 
         $this->syncSubscriberStatusToLists($lists);
 
@@ -63,13 +53,11 @@ class SyncSubscribersStatusToLists extends BaseCommand
 //            must keep try catch inside the loop, otherwise it will stop on error, and not continue with rest of users?
             foreach ($users as $user) {
                 try {
-                    $this->info('Syncing ' . $user->email . ' STATUS to mailwizz with ' . $user->player_status);
-
+                    $this->info(sprintf("Syncing %s STATUS to mailwizz with %s", $user->email, $user->player_status));
                     $this->mailWizzService->updateSubscriberStatusLists($user, $lists);
-
                 } catch (Exception $e) {
-                    $this->error('Error syncing ' . $user->email . '. Please check logs for more details');
-                    $this->logger->error($e->getMessage());
+                    $this->error(sprintf("Error syncing %s. Please check logs for more details", $user->email));
+                    logger()->error($e->getMessage());
                     continue;
                 }
             }

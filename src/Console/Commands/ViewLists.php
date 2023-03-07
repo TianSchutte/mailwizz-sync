@@ -2,11 +2,10 @@
 
 namespace TianSchutte\MailwizzSync\Console\Commands;
 
-use Exception;
-use ReflectionException;
 
 /**
- * @package MailWizzApi
+ * @package MailWizzSync
+ * @licence Giant Outsourcing
  * @author: Tian Schutte
  */
 class ViewLists extends BaseCommand
@@ -32,17 +31,7 @@ class ViewLists extends BaseCommand
      */
     public function handle()
     {
-        try {
-            $lists = $this->mailWizzService->getLists();
-        } catch (ReflectionException|Exception $e) {
-            $this->error($e->getMessage());
-            return 1;
-        }
-
-        if (empty($lists)) {
-            $this->error('No lists found on mailwizz server');
-            return 1;
-        }
+        $lists = $this->getLists();
 
         $this->info('All Current MailWizz Lists:');
 

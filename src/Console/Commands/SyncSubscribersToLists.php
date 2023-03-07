@@ -5,7 +5,8 @@ namespace TianSchutte\MailwizzSync\Console\Commands;
 use Exception;
 
 /**
- * @package MailWizzApi
+ * @package MailWizzSync
+ * @licence Giant Outsourcing
  * @author: Tian Schutte
  */
 class SyncSubscribersToLists extends BaseCommand
@@ -56,26 +57,29 @@ class SyncSubscribersToLists extends BaseCommand
     private function syncSubscribersToList(): array
     {
         $failedUsers = [];
+
         app('User')::chunk($this->chunkSize, function ($users) use (&$failedUsers) {
 
             foreach ($users as $user) {
-                $isSubscribed = $this->mailWizzService->isSubscriberInLists($user);
+                $isAlreadySubscribed = $this->mailWizzService->isSubscriberInLists($user);
 
-                if ($isSubscribed) {
-                    $this->info($user->email . ' already added to this list');
+                if ($isAlreadySubscribed) {
+                    $this->info(sprintf("%s already added to this list", $user->email));
                     continue;
                 }
 
                 $subscribed = $this->mailWizzService->subscribeToList($user);
 
                 if ($subscribed) {
-                    $this->info('Added ' . $user->email . ' to mailwizz with ' . $user->player_status);
+                    $this->info(sprintf("Added %s to mailwizz with %s", $user->email, $user->player_status));
+
                 } else {
-                    $this->error('Failed to add ' . $user->email . ' to mailwizz with ' . $user->player_status);
+                    $this->error(sprintf("Failed to add %s to mailwizz with %s", $user->email, $user->player_status));
                     $failedUsers[] = $user->email;
                 }
             }
         });
+
         return $failedUsers;
     }
 }

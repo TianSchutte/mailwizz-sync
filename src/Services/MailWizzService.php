@@ -11,8 +11,9 @@ use TianSchutte\MailwizzSync\Traits\ListManagementTrait;
 use TianSchutte\MailwizzSync\Traits\SubscriberManagementTrait;
 
 /**
- * @package MailWizzApi
+ * @package MailWizzSync
  * @description Main MailWizz functionality is contained here
+ * @licence Giant Outsourcing
  * @author: Tian Schutte
  */
 class MailWizzService implements ListManagerInterface, SubscriberManagerInterface

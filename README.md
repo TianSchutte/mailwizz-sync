@@ -16,7 +16,7 @@ This package provides methods and commands for managing subscribers of email lis
     -> Tag*: FNAME
     -> Tag*: LNAME
     -> Tag*: COUNTRY
-    -> Tag*: STATUS
+    -> Tag*: PLAYER_STATUS
     -> Tag*: CURRENCY_CODE
     
 -> Name*: AU/NZ (Australia and New Zealand)
@@ -24,7 +24,7 @@ This package provides methods and commands for managing subscribers of email lis
     -> Tag*: FNAME
     -> Tag*: LNAME
     -> Tag*: COUNTRY
-    -> Tag*: STATUS
+    -> Tag*: PLAYER_STATUS
     -> Tag*: CURRENCY_CODE
 ```
 
@@ -49,34 +49,64 @@ php artisan vendor:publish --tag=config
 - In the newly copied config file called mailwizzsync.php in `/config/mailwizzsync.php` make sure all details are set correctly
 ```php
 
-    'api_url' => env('MAILWIZZ_API_URL', 'https://base.url.com/api/index.php/'),
-    'public_key' => env('MAILWIZZ_API_PUBLIC_KEY', 'api_key'),
-    'cache_file_path' => env('MAILWIZZ_CACHE_FILE_PATH',storage_path('MailWizz/data/cache')),
-    'lists' => [
-        'ROTW' =>  env('MAILWIZZ_LISTUID_ROTW','list_1_id'),
-        'AU' =>  env('MAILWIZZ_LISTUID_AUNZ','list_2_id'),
-        'NZ' =>  env('MAILWIZZ_LISTUID_AUNZ','list_2_id'),
+return [
+    'mailwizz' => [
+        'api_url' => env('MAILWIZZ_API_URL', 'https://base.url.com/api/index.php/'),
+        'public_key' => env('MAILWIZZ_API_PUBLIC_KEY', 'api_key'),
+        'cache_file_path' => env('MAILWIZZ_CACHE_FILE_PATH', storage_path('MailWizz/data/cache')),
+        'lists' => [
+            'ROTW' => env('MAILWIZZ_LISTUID_ROTW', 'list_1_id'),
+            'AU' => env('MAILWIZZ_LISTUID_AUNZ', 'list_2_id'),
+            'NZ' => env('MAILWIZZ_LISTUID_AUNZ', 'list_2_id'),
             //Can add more country lists here if needed
+
+        ],
     ],
-    'user_class' =>  env('MAILWIZZ_USER_CLASS',config('auth.providers.users.model')), //add your user model path here
-    'chunk_size' => env('MAILWIZZ_CHUNK_SIZE', 50),
+    'defaults' => [
+        'user_class' => env('MAILWIZZ_USER_CLASS', config('auth.providers.users.model')), //add your user model path here
+        'player_status_history_class' => env('MAILWIZZ_STATUS_HISTORY_CLASS', \App\Models\Member\PlayerStatusHistory::class),
+        'chunk_size' => env('MAILWIZZ_CHUNK_SIZE', 50),
+        'csv_file_path' => env('MAILWIZZ_CSV_FILE_PATH', public_path()),
+    ],
+    'queue' => [
+        'tries' => env('MAILWIZZ_QUEUE_TRIES', 3),
+        'timeout' => env('MAILWIZZ_QUEUE_TIMEOUT', 60),
+        'backoff' => env('MAILWIZZ_QUEUE_BACKOFF', [2, 5, 10]),
+        'max_exceptions' => env('MAILWIZZ_QUEUE_MAX_EXCEPTIONS', 3),
+        'release_time' => env('MAILWIZZ_QUEUE_RELEASE_TIME', 10),
+    ]
+];
 ```
 - Another Option is to set the env variables in your .env file
-```php
-'MAILWIZZ_API_URL'
-'MAILWIZZ_API_PUBLIC_KEY'
-'MAILWIZZ_CACHE_FILE_PATH'
-'MAILWIZZ_LISTUID_ROTW'
-'MAILWIZZ_LISTUID_AUNZ'
-'MAILWIZZ_USER_CLASS'
-'MAILWIZZ_CHUNK_SIZE'
+```dotenv
+MAILWIZZ_API_URL=
+MAILWIZZ_API_PUBLIC_KEY=
+MAILWIZZ_CACHE_FILE_PATH=storage_path('MailWizz/data/cache')
+MAILWIZZ_LISTUID_ROTW=
+MAILWIZZ_LISTUID_AUNZ=
+MAILWIZZ_USER_CLASS=config('auth.providers.users.model')
+MAILWIZZ_CHUNK_SIZE=50
+MAILWIZZ_CSV_FILE_PATH=public_path()
+MAILWIZZ_STATUS_HISTORY_CLASS=\App\Models\Member\PlayerStatusHistory::class
+MAILWIZZ_QUEUE_TRIES=3
+MAILWIZZ_QUEUE_TIMEOUT=60
+MAILWIZZ_QUEUE_BACKOFF=[2,5,10]
+MAILWIZZ_QUEUE_MAX_EXCEPTIONS=3
+MAILWIZZ_QUEUE_RELEASE_TIME=10
 ```
-
+- Queues: To allow the user observer to do its job, you must have a queue setup and running. If you don't have a queue setup, you can use the following commands to create and run the queue in the background
+```bash
+php artisan queue:table
+php artisan migrate
+php artisan queue:work 
+```
 - Finally, run the following commands to sync users to the mailwizz from users tables
 ```bash
-php artisan mailwizz:view-lists
-php artisan mailwizz:sync-subscribers-lists
-php artisan mailwizz:sync-subscribers-status-lists
+mailwizz:sync-subscribers-lists             Sync all users into the specified mailwizz list subscribers                                                  
+mailwizz:sync-subscribers-lists-status      Syncs the statuses of users on the app with the statuses of the users on all mailwizz lists                  
+mailwizz:sync-subscribers-lists-status-date Bulk sync player status from a given date.  Add the date as an argument, as YYYY-MM-DD.  
+mailwizz:view-lists                         View a list of all the lists on the mailwizz server                                                          
+mailwizz:export-users                       Export users to a CSV file. add --countries boolean to only export users from countries specified in config  
 ```
 
 
