@@ -5,7 +5,8 @@ namespace TianSchutte\MailwizzSync\Console\Commands;
 use Exception;
 
 /**
- * @package MailWizzApi
+ * @package MailWizzSync
+ * @licence Giant Outsourcing
  * @author: Tian Schutte
  */
 class SyncSubscribersStatusToLists extends BaseCommand

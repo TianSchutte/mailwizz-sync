@@ -8,7 +8,8 @@ use EmsApi\Config;
 use Exception;
 
 /**
- * @package MailWizzApi
+ * @package MailWizzSync
+ * @licence Giant Outsourcing
  * @description  Holds the MailWizzApi connection
  * @author: Tian Schutte
  */

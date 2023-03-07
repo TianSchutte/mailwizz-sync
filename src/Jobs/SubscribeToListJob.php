@@ -4,6 +4,11 @@ namespace TianSchutte\MailwizzSync\Jobs;
 
 use Exception;
 
+/**
+ * @package MailWizzSync
+ * @licence Giant Outsourcing
+ * @author: Tian Schutte
+ */
 class SubscribeToListJob extends BaseJob
 {
     /**
@@ -20,11 +25,7 @@ class SubscribeToListJob extends BaseJob
         }
 
         if (!$isSubscribeToList) {
-            logger()->error(
-                'MailWizz: Could not subscribe user to list', [
-                    'user' => $this->user->email,
-                ]
-            );
+            $this->log('Could not subscribe user to list');
             $this->release($this->releaseTime);
         }
     }
@@ -35,11 +36,6 @@ class SubscribeToListJob extends BaseJob
      */
     public function failed(Exception $exception)
     {
-        logger()->error(
-            'MailWizz: Could not subscribe user to list', [
-                'User' => $this->user->email,
-                'Exception' => $exception->getMessage(),
-            ]
-        );
+        $this->log($exception->getMessage());
     }
 }

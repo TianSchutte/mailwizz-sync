@@ -2,7 +2,11 @@
 
 namespace TianSchutte\MailwizzSync\Traits;
 
-
+/**
+ * @package MailWizzSync
+ * @licence Giant Outsourcing
+ * @author: Tian Schutte
+ */
 trait ListManagementTrait
 {
     /**

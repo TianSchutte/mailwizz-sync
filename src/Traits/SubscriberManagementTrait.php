@@ -4,6 +4,11 @@ namespace TianSchutte\MailwizzSync\Traits;
 
 use Exception;
 
+/**
+ * @package MailWizzSync
+ * @licence Giant Outsourcing
+ * @author: Tian Schutte
+ */
 trait SubscriberManagementTrait
 {
     /**

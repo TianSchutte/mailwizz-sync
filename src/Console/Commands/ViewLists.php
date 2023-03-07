@@ -4,7 +4,8 @@ namespace TianSchutte\MailwizzSync\Console\Commands;
 
 
 /**
- * @package MailWizzApi
+ * @package MailWizzSync
+ * @licence Giant Outsourcing
  * @author: Tian Schutte
  */
 class ViewLists extends BaseCommand

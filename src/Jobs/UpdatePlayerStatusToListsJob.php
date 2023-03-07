@@ -5,6 +5,11 @@ namespace TianSchutte\MailwizzSync\Jobs;
 use Exception;
 use ReflectionException;
 
+/**
+ * @package MailWizzSync
+ * @licence Giant Outsourcing
+ * @author: Tian Schutte
+ */
 class UpdatePlayerStatusToListsJob extends BaseJob
 {
 
@@ -27,11 +32,6 @@ class UpdatePlayerStatusToListsJob extends BaseJob
      */
     public function failed(Exception $exception)
     {
-        logger()->error(
-            'MailWizz: Could not update user player_status to lists', [
-                'User' => $this->user->email,
-                'Exception' => $exception->getMessage(),
-            ]
-        );
+        $this->log($exception->getMessage());
     }
 }

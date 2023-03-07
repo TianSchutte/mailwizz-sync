@@ -6,6 +6,11 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\Console\Input\InputArgument;
 
+/**
+ * @package MailWizzSync
+ * @licence Giant Outsourcing
+ * @author: Tian Schutte
+ */
 class SyncSubscribersToListsByDate extends BaseCommand
 {
     /**

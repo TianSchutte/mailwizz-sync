@@ -8,8 +8,9 @@ use TianSchutte\MailwizzSync\Jobs\UpdatePlayerStatusToListsJob;
 use TianSchutte\MailwizzSync\Services\MailWizzService;
 
 /**
- * @package MailWizzApi
+ * @package MailWizzSync
  * @description User observer to add user to mailwizz list when created
+ * @licence Giant Outsourcing
  * @author: Tian Schutte
  */
 class UserObserver

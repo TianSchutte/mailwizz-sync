@@ -11,6 +11,11 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use TianSchutte\MailwizzSync\Services\MailWizzService;
 
+/**
+ * @package MailWizzSync
+ * @licence Giant Outsourcing
+ * @author: Tian Schutte
+ */
 class BaseJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -73,5 +78,13 @@ class BaseJob implements ShouldQueue
         $this->timeout = config('mailwizzsync.queue.timeout');
         $this->maxExceptions = config('mailwizzsync.queue.max_exceptions');
         $this->releaseTime = config('mailwizzsync.queue.release_time');
+    }
+
+    protected function log($message){
+        logger()->error(
+            "MailWizz: {$message}", [
+                'User' => $this->user->email
+            ]
+        );
     }
 }

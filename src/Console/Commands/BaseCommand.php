@@ -7,6 +7,11 @@ use Illuminate\Console\Command;
 use ReflectionException;
 use TianSchutte\MailwizzSync\Services\MailWizzService;
 
+/**
+ * @package MailWizzSync
+ * @licence Giant Outsourcing
+ * @author: Tian Schutte
+ */
 abstract class BaseCommand extends Command
 {
     /**

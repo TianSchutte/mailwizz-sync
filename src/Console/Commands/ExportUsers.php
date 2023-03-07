@@ -6,7 +6,11 @@ use Exception;
 use League\Csv\CannotInsertRecord;
 use League\Csv\Writer;
 
-
+/**
+ * @package MailWizzSync
+ * @licence Giant Outsourcing
+ * @author: Tian Schutte
+ */
 class ExportUsers extends BaseCommand
 {
     /**
@@ -33,8 +37,8 @@ class ExportUsers extends BaseCommand
         $parameter = $this->option('countries');
 
         $filename = $parameter
-            ? 'users_countries_' . time() . '.csv'
-            : 'users_rotw_' . time() . '.csv';
+            ? 'subscribers_countries_' . time() . '.csv'
+            : 'subscribers_rotw_' . time() . '.csv';
 
         $filepath = config('mailwizzsync.defaults.csv_file_path') . '/' . $filename;
 
@@ -42,13 +46,13 @@ class ExportUsers extends BaseCommand
 
         try {
             $users = $this->getUsers($parameter);
-            $this->writeUsersToCsv($users, $csv);
+            $this->writeSubscribersToCsv($users, $csv);
         } catch (CannotInsertRecord|Exception $e) {
             $this->error('Error writing to CSV file or fetching users ');
             return 1;
         }
 
-        $this->info('Users exported to ' . $csv->getPathname());
+        $this->info('Subscribers exported to ' . $csv->getPathname());
         return 0;
     }
 
@@ -58,7 +62,7 @@ class ExportUsers extends BaseCommand
      * @return void
      * @throws CannotInsertRecord
      */
-    private function writeUsersToCsv($users, $csv)
+    private function writeSubscribersToCsv($users, $csv)
     {
         $csv->insertOne(['FNAME', 'SNAME', 'EMAIL', 'PLAYER_STATUS', 'COUNTRY', 'CURRENCY_CODE']);
 

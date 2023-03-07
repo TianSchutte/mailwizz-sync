@@ -4,6 +4,11 @@ namespace TianSchutte\MailwizzSync\Jobs;
 
 use Exception;
 
+/**
+ * @package MailWizzSync
+ * @licence Giant Outsourcing
+ * @author: Tian Schutte
+ */
 class UnsubscribeFromListsJob extends BaseJob
 {
 
@@ -21,11 +26,7 @@ class UnsubscribeFromListsJob extends BaseJob
         }
 
         if (!$isSubscribeToList) {
-            logger()->error(
-                'MailWizz: Could not unsubscribe user from lists', [
-                    'user' => $this->user->email,
-                ]
-            );
+            $this->log('Could not unsubscribe user from lists');
             $this->release($this->releaseTime);
         }
     }
@@ -36,11 +37,6 @@ class UnsubscribeFromListsJob extends BaseJob
      */
     public function failed(Exception $exception)
     {
-        logger()->error(
-            'MailWizz: Could not unsubscribe user to list', [
-                'User' => $this->user->email,
-                'Exception' => $exception->getMessage(),
-            ]
-        );
+        $this->log($exception->getMessage());
     }
 }

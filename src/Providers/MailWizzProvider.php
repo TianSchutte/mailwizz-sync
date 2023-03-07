@@ -11,8 +11,9 @@ use TianSchutte\MailwizzSync\Console\Commands\ViewLists;
 use TianSchutte\MailwizzSync\Observers\UserObserver;
 
 /**
- * @package MailWizzApi
+ * @package MailWizzSync
  * @description MailWizz Service Provider to load all necessary files and bind models to package
+ * @licence Giant Outsourcing
  * @author: Tian Schutte
  */
 class MailWizzProvider extends ServiceProvider
