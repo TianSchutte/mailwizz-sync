@@ -8,7 +8,7 @@ namespace TianSchutte\MailwizzSync\Console\Commands;
  * @licence Giant Outsourcing
  * @author: Tian Schutte
  */
-class ViewLists extends BaseCommand
+class ViewLists extends BaseMailWizzCommand
 {
     /**
      * The name and signature of the console command.

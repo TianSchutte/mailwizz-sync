@@ -11,7 +11,7 @@ use League\Csv\Writer;
  * @licence Giant Outsourcing
  * @author: Tian Schutte
  */
-class ExportUsers extends BaseCommand
+class ExportUsers extends BaseMailWizzCommand
 {
     /**
      * The name and signature of the console command.

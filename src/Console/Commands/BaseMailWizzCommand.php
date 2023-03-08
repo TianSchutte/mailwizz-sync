@@ -12,7 +12,7 @@ use TianSchutte\MailwizzSync\Services\MailWizzService;
  * @licence Giant Outsourcing
  * @author: Tian Schutte
  */
-abstract class BaseCommand extends Command
+abstract class BaseMailWizzCommand extends Command
 {
     /**
      * @var MailWizzService

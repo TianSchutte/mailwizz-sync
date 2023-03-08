@@ -2,6 +2,22 @@
 
 This package provides methods and commands for managing subscribers of email lists in MailWizz. It has methods to get the email lists, update the subscriber status for all email lists, check if a user is subscribed to a list, subscribe a user to a list, unsubscribe a user from all lists, unsubscribe a user from a specific list, and delete a subscriber from a specific list. The class uses endpoints to interact with the email list management system and catches exceptions if errors occur, and logs it to the laravel log.
 
+
+## Task Requirements:
+### Commands Functionality:
+- [x] View a list of all countries
+- [x] Export Users, based on countries defined in config, to csv
+- [x] Sync All Users to mailwizz from database
+- [x] Sync All User statuses to mailwizz form database
+- [x] Sync filtered Users status to mailwizz, that has had their roles changed, by looking in player_status_histories table
+### Base Functionality:
+- [x] Observer which checks whenever a user model has certain interactions, sync relavent data to mailwizz on interaction.
+    - [x] Sends a job to a queue whenever one of these interactions occur
+        - Once User registers, add them to default list based on country field on User Model(ROTW, NZ/AU)
+        - If a user is deleted through a user model, unsubscribe them from all lists/ Or Delete them from all lists
+        - If a user status is updated, it must be updated on all lists
+
+
 ## Installation
 
 ### MailWizz Setup
@@ -97,16 +113,16 @@ MAILWIZZ_QUEUE_RELEASE_TIME=10
 - Queues: To allow the user observer to do its job, you must have a queue setup and running. If you don't have a queue setup, you can use the following commands to create and run the queue in the background
 ```bash
 php artisan queue:table
-php artisan migrate
+php artisan migrate --path=database/migrations/2023_03_07_065701_create_jobs_table.php
 php artisan queue:work 
 ```
 - Finally, run the following commands to sync users to the mailwizz from users tables
 ```bash
-mailwizz:sync-subscribers-lists             Sync all users into the specified mailwizz list subscribers                                                  
-mailwizz:sync-subscribers-lists-status      Syncs the statuses of users on the app with the statuses of the users on all mailwizz lists                  
-mailwizz:sync-subscribers-lists-status-date Bulk sync player status from a given date.  Add the date as an argument, as YYYY-MM-DD.  
-mailwizz:view-lists                         View a list of all the lists on the mailwizz server                                                          
-mailwizz:export-users                       Export users to a CSV file. add --countries boolean to only export users from countries specified in config  
+php artisan mailwizz:sync-subscribers-lists             Sync all users into the specified mailwizz list subscribers                                                  
+php artisan mailwizz:sync-subscribers-lists-status      Syncs the statuses of users on the app with the statuses of the users on all mailwizz lists                  
+php artisan mailwizz:sync-subscribers-lists-status-date Bulk sync player status from a given date.  Add the date as an argument, as YYYY-MM-DD.  
+php artisan mailwizz:view-lists                         View a list of all the lists on the mailwizz server                                                          
+php artisan mailwizz:export-users                       Export users to a CSV file. add --countries boolean to only export users from countries specified in config  
 ```
 
 
@@ -144,13 +160,3 @@ if (!-e $request_filename){
     rewrite ^(.*)$ /index.php;
 }
 ```
-
-## Task Requirements:
-
-- [x] Once User registers, add them to default list based on country field on User Model(ROTW, NZ/AU)
-- [x] If a user is deleted through a user model, unsubscribe them from all lists/ Or Delete them from all lists
-- [x] If a user status is updated, it must be updated on all lists
-- [x] Command to Sync User model 'Status' fields to all mailwizz lists where user is subscribered
-- [x] Command to Add all users from database to mailwizz, including 'Status' and 'Country' (Must also support assigning
-  appropriately to 2 lists (ROTW, NZ/AU))
-- [x] Command to view all lists, with list_id, name, description

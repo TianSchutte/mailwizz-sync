@@ -9,7 +9,7 @@ use Exception;
  * @licence Giant Outsourcing
  * @author: Tian Schutte
  */
-class SyncSubscribersToLists extends BaseCommand
+class SyncSubscribersToLists extends BaseMailWizzCommand
 {
     /**
      * The name and signature of the console command.
