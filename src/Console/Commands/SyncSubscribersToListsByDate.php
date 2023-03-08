@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\InputArgument;
  * @licence Giant Outsourcing
  * @author: Tian Schutte
  */
-class SyncSubscribersToListsByDate extends BaseCommand
+class SyncSubscribersToListsByDate extends BaseMailWizzCommand
 {
     /**
      * The name and signature of the console command.

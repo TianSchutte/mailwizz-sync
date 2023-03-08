@@ -16,7 +16,7 @@ use TianSchutte\MailwizzSync\Services\MailWizzService;
  * @licence Giant Outsourcing
  * @author: Tian Schutte
  */
-class BaseJob implements ShouldQueue
+class BaseMailWizzJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 

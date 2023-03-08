@@ -9,7 +9,7 @@ use Exception;
  * @licence Giant Outsourcing
  * @author: Tian Schutte
  */
-class SubscribeToListJob extends BaseJob
+class SubscribeToListJob extends BaseMailWizzJob
 {
     /**
      * @return void

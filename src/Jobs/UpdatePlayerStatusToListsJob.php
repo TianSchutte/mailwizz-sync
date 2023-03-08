@@ -10,7 +10,7 @@ use ReflectionException;
  * @licence Giant Outsourcing
  * @author: Tian Schutte
  */
-class UpdatePlayerStatusToListsJob extends BaseJob
+class UpdatePlayerStatusToListsJob extends BaseMailWizzJob
 {
 
     /**

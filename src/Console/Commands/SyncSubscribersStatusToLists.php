@@ -9,7 +9,7 @@ use Exception;
  * @licence Giant Outsourcing
  * @author: Tian Schutte
  */
-class SyncSubscribersStatusToLists extends BaseCommand
+class SyncSubscribersStatusToLists extends BaseMailWizzCommand
 {
 
     /**
